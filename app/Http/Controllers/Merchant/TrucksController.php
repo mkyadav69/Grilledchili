@@ -1,36 +1,30 @@
 <?php
 
-namespace App\Http\Controllers\Office;
+namespace App\Http\Controllers\Merchant;
 
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
-use App\Models\Customer;
-use App\Models\Owner;
+use App\Models\Truck;
 use Carbon\Carbon;
 use DataTables;
 use Config;
 
 
-class CustomerController extends Controller
+class TrucksController extends Controller
 {
     
-    public function __construct()
-    {
-        $this->middleware('auth');
+    // public function __construct()
+    // {
+    //     $this->middleware('auth');
+    // }
+
+    public function showTrucks(){
+        return view('merchant.truck.truck');
     }
 
-    public function showCustomer(){
-        $regions_id = Config::get('constant.regions_id');
-        $countries = Config::get('constant.countries');
-        $branch_wise = Config::get('constant.branch_wise');
-        $indian_all_states = Config::get('constant.indian_all_states');
-        $customer_classifications = Config::get('constant.customer_classifications');
-        return view('office.customer.customer', compact('regions_id', 'countries', 'branch_wise', 'indian_all_states', 'customer_classifications'));
-    }
-
-    public function storeCustomer(Request $request){
+    public function storeTrucks(Request $request){
 
         $validator = Validator::make($request->all(), [
             "customer_name" => "required",
@@ -91,17 +85,17 @@ class CustomerController extends Controller
         }
     }
 
-    public function getCustomer(Request $request){
-        $customer = Datatables::of(Customer::query());
-        if(Auth::user()->hasPermission('update_customer')){
+    public function getTrucks(Request $request){
+        $customer = Datatables::of(Truck::query());
+        // if(Auth::user()->hasPermission('update_customer')){
             $action_btn[] = '<div class="table-data-feature"><button row-id="" class="item edit" data-toggle="tooltip" data-placement="top" title="Edit"><i class="zmdi zmdi-edit text-primary"></i></button></div>';
-        }
+        // }
         
-        if(Auth::user()->hasPermission('delete_customer')){
+        // if(Auth::user()->hasPermission('delete_customer')){
             $action_btn[] = '<div class="table-data-feature"><button row-id="" class="item delete" data-toggle="tooltip" data-placement="top" title="Delete"><i class="zmdi zmdi-delete text-danger"></i></button></div>';
-        }
+        // }
 
-        if(Auth::user()->hasPermission(['update_customer', 'delete_customer'])){
+        // if(Auth::user()->hasPermission(['update_customer', 'delete_customer'])){
             $customer->addColumn('actions', function ($customer) use($action_btn){
                 return '<div class="table-data-feature">'.implode('', $action_btn).'</div>';
                
@@ -110,18 +104,18 @@ class CustomerController extends Controller
                     return $customer->system_id;
                 }
             ])->rawColumns(['actions' => 'actions']);
-        }else{
-            $customer->addColumn('actions', function ($customer){
-                return '<div class="table-data-feature"><button row-id="" class="item" data-toggle="tooltip" data-placement="top" title="View Only"><i class="fa fa-eye text-primary"></i></button></div>';
+        // }else{
+            // $customer->addColumn('actions', function ($customer){
+            //     return '<div class="table-data-feature"><button row-id="" class="item" data-toggle="tooltip" data-placement="top" title="View Only"><i class="fa fa-eye text-primary"></i></button></div>';
                
-            })->setRowAttr([
-                'data-id' => function($customer) {
-                    return $customer->system_id;
-                }
-            ])->rawColumns(['actions' => 'actions']);
-        }
-        $customer->editColumn('dt_created', function ($customer) {
-            $date = $customer['dt_created'];
+            // })->setRowAttr([
+            //     'data-id' => function($customer) {
+            //         return $customer->system_id;
+            //     }
+            // ])->rawColumns(['actions' => 'actions']);
+        // }
+        $customer->editColumn('created_at', function ($customer) {
+            $date = $customer['created_at'];
             if(!empty($date)){
                 return date('d-m-Y', strtotime($date));
             }

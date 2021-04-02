@@ -5,8 +5,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class QuatationAdd extends Model
+class TruckSetting extends Model
 {
-    protected $table = 'tbl_quotation';
-    public $timestamps = false;
+    protected $table="truck_settings";
+    use HasFactory;
 }

@@ -1,5 +1,5 @@
 @extends('theme.layout.base_layout')
-@section('title', 'Customer')
+@section('title', 'Manage Trucks')
 @section('content')
 <style>
 .required:after {
@@ -37,19 +37,19 @@ table.dataTable > thead > tr > th:not(.sorting_disabled), table.dataTable > thea
         </div>
     @endif
     <div class="col-md-12">
-        <h3 class="title-5 m-b-35">Manage Customers</h3>
+        <h3 class="title-5 m-b-35">Manage Trucks</h3>
         <div class="table-data__tool">
             <div class="table-data__tool-right">
-                @permission('add_customer')
+               
                     <button class="au-btn-filter mb-1 add_modal" data-toggle="modal" data-target="#addModal">
-                        <i class="zmdi zmdi-plus"></i> Add Customer
+                        <i class="zmdi zmdi-plus"></i> Add Trucks
                     </button>
                
                     <input type="file" class="au-btn-filter">
                     <button class="au-btn-filter">
-                        <i class="zmdi zmdi-upload"></i> Import
+                        <i class="zmdi zmdi-upload"></i> Import Trucks
                     </button>
-                @endpermission
+               
 
             </div>
         </div>
@@ -95,7 +95,7 @@ table.dataTable > thead > tr > th:not(.sorting_disabled), table.dataTable > thea
                 scrollX: true,
                 responsive: true,
                 ajax: {
-                    url:'{{ route("get_customer") }}',
+                    url:'{{ route("get_trucks") }}',
                 },
                 pageLength: 10,
                 columnDefs: [{ 
@@ -105,7 +105,7 @@ table.dataTable > thead > tr > th:not(.sorting_disabled), table.dataTable > thea
                     "searchable": true,
                     "targets": [0]
                 }],
-                aaSorting: [[0, 'asc']],
+                aaSorting: [[0, 'desc']],
                 language: {
                     processing: '<i class="fa fa-spinner fa-spin fa-4x fa-fw" style="font-size:60px;"></i>'
                 },
@@ -114,11 +114,19 @@ table.dataTable > thead > tr > th:not(.sorting_disabled), table.dataTable > thea
                     [10, 20, 30, "All"]
                 ],
                 columns:[
-                    { data: 'cust_pin_no', className: "text td_ellipsis td-limit", title : 'GST No'},
-                    { data: 'st_com_name', className: "text td_ellipsis td-limit", title : 'Company Name'},
-                    { data: 'st_cust_city', className: "select td_ellipsis td-limit", title : 'View Branch Wise'},
-                    { data: 'st_cust_state', className: "select td_ellipsis td-limit", title : 'State'},
-                    { data: 'dt_created', title : 'Created At'},
+                    { data: 'name', className: "text td_ellipsis td-limit", title : 'Truck Name'},
+                    { data: 'alias', className: "text td_ellipsis td-limit", title : 'Truck Alias'},
+                    { data: 'latitude', className: "text td_ellipsis td-limit", title : 'Latitude'},
+                    { data: 'longitude', className: "text td_ellipsis td-limit", title : 'Longitude'},
+                    { data: 'description', className: "text td_ellipsis td-limit", title : 'Description'},
+                    { data: 'phone', className: "text td_ellipsis td-limit", title : 'Phone'},
+                    { data: 'website', className: "text td_ellipsis td-limit", title : 'Website'},
+                    { data: 'address', className: "text td_ellipsis td-limit", title : 'Address'},
+                    { data: 'operatingtime', className: "text td_ellipsis td-limit", title : 'Operating Time'},
+                    { data: 'weekdaytime', className: "text td_ellipsis td-limit", title : 'Weekday Time'},
+                    { data: 'weekendtime', className: "text td_ellipsis td-limit", title : 'Weekend Time'},
+                    { data: 'rating', className: "text td_ellipsis td-limit", title : 'Ratings'},
+                    { data: 'created_at', title : 'Created At'},
                     { data: 'actions', title : 'Actions'},
                     
                 ], 
@@ -277,7 +285,7 @@ table.dataTable > thead > tr > th:not(.sorting_disabled), table.dataTable > thea
         </div>
         <div class="modal-body">
             <div class="card">
-                <form action="{{route('store_customer')}}" method="post">
+                <form action="{{route('store_trucks')}}" method="post">
                     @csrf
                     <div class="row form-group">
                         <div class="col col-md-3">

@@ -111,7 +111,7 @@ table.dataTable {
         <aside class="menu-sidebar d-none d-block">
             <div class="logo">
                 <a href="#">
-                    <img src="{{asset('images/icon/cromo.png')}}" alt="Cool Admin" />
+                    <img src="{{asset('images/icon/cropped-web_logo_small-1.png')}}" alt="Cool Admin" />
                 </a>
             </div>
             @include('theme.layout.sidebar')
@@ -132,11 +132,7 @@ table.dataTable {
                     <div class="container-fluid">
                         @yield('content')
                         <div class="row">
-                            <div class="col-md-12">
-                                <div class="copyright">
-                                    <p>© Chromatographyworld All rights reserved </p>
-                                </div>
-                            </div>
+                        @include('theme.layout.footer')
                         </div>
                     </div>
                 </div>
