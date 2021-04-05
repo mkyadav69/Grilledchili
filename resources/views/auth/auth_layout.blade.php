@@ -44,7 +44,7 @@
                     <div class="login-content">
                         <div class="login-logo">
                             <a href="#">
-                                <img src="{{asset('images/icon/cromo.png')}}" alt="CoolAdmin">
+                                <img src="{{asset('images/icon/cropped-web_logo_small-1.png')}}" alt="CoolAdmin">
                             </a>
                         </div>
                        @yield('content')

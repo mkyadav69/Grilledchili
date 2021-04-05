@@ -80,11 +80,7 @@
 .m-b-35 {
     margin-bottom: 16px;
 }
-img {
-    max-width: 145%;
-    height: auto;
-    margin-left: -33px;
-}
+
 table.dataTable {
     border-collapse: separate !important;
     border-spacing: 2px;

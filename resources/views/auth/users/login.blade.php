@@ -30,7 +30,7 @@
         @csrf
         <div class="form-group">
             <label class="required">Email Address</label>
-            <input class="au-input au-input--full" type="email" name="email" placeholder="Email">
+            <input class="au-input au-input--full" required type="email" name="email" placeholder="Email">
         </div>
         @if ($errors->has('email'))
             <div class="sufee-alert alert with-close alert-danger alert-dismissible fade show">
@@ -43,7 +43,7 @@
         @endif
         <div class="form-group">
             <label class="required">Password</label>
-            <input class="au-input au-input--full" type="password" name="password" placeholder="Password">
+            <input class="au-input au-input--full" type="password" required name="password" placeholder="Password">
         </div>
         @if ($errors->has('password'))
             <div class="sufee-alert alert with-close alert-danger alert-dismissible fade show">
@@ -67,7 +67,7 @@
     </form>
     <div class="register-link">
         <p>
-        © Chromatographyworld All rights reserved
+        © GrilledChili All rights reserved
            
         </p>
     </div>

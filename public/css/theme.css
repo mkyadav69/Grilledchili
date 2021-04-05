@@ -488,11 +488,11 @@ section {
 }
 
 .au-btn--green {
-    background: #63c76a;
+    background: #d00f0fc4;
 }
 
 .au-btn--green:hover {
-    background: #59bd60;
+    background: #d00f0fc4;
 }
 
 .au-btn-plus {

@@ -275,7 +275,7 @@ table.dataTable > thead > tr > th:not(.sorting_disabled), table.dataTable > thea
 </script>
 @endsection
 
-@section('addModal')
+@section('naddModal')
 <!-- add records -->
     <div class="modal-content">
         <div class="modal-header">
@@ -598,7 +598,7 @@ table.dataTable > thead > tr > th:not(.sorting_disabled), table.dataTable > thea
 <!-- end add record -->
 @endsection
 
-@section('editModal')
+@section('naddModal')
 <!-- edit records -->
     <div class="modal-content">
         <div class="modal-header">
@@ -925,7 +925,7 @@ table.dataTable > thead > tr > th:not(.sorting_disabled), table.dataTable > thea
 <!-- end add record -->
 @endsection
 
-@section('deleteModal')
+@section('naddModal')
 <!-- Delete-->
     <div class="modal-content">
         <div class="modal-header">
