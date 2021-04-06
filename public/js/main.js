@@ -253,16 +253,25 @@
     const brandService = 'rgba(0,173,95,0.8)'
 
     var elements = 10
-    var data1 = [52, 60, 55, 50, 65, 80, 57, 70, 105, 115]
-    var data2 = [102, 70, 80, 100, 56, 53, 80, 75, 65, 90]
-
+    var data1 = [52]
+    var data2 = [102]
+    var d = document.getElementById("report").value;
+    var decode= JSON.parse(d);
+    
+    console.log(decode);
+    // var data2 = decode.data.data2;
+    // var labels = decode.labels;
+    // console.log(data1);
+    // console.log(data2);
+    // console.log(labels);
     var ctx = document.getElementById("recent-rep-chart");
+    
     if (ctx) {
       ctx.height = 250;
       var myChart = new Chart(ctx, {
         type: 'line',
         data: {
-          labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', ''],
+          labels: ['January', 'February'],
           datasets: [
             {
               label: 'My First dataset',
@@ -332,6 +341,13 @@
     }
 
     // Percent Chart
+    var d = document.getElementById("sale_data_per").value;
+    var decode= JSON.parse(d);
+    var data= decode.data;
+    var labels = decode.labels;
+    var colors = decode.colors;
+
+
     var ctx = document.getElementById("percent-chart");
     if (ctx) {
       ctx.height = 280;
@@ -341,11 +357,8 @@
           datasets: [
             {
               label: "My First dataset",
-              data: [60, 40],
-              backgroundColor: [
-                '#00b5e9',
-                '#fa4251'
-              ],
+              data: data,
+              backgroundColor: colors,
               hoverBackgroundColor: [
                 '#00b5e9',
                 '#fa4251'
@@ -355,14 +368,11 @@
               ],
               hoverBorderColor: [
                 'transparent',
-                'transparent'
+                'transparent',
               ]
             }
           ],
-          labels: [
-            'Products',
-            'Services'
-          ]
+          labels: labels
         },
         options: {
           maintainAspectRatio: false,
@@ -370,6 +380,7 @@
           cutoutPercentage: 55,
           animation: {
             animateScale: true,
+            animateRotate: true,
             animateRotate: true
           },
           legend: {

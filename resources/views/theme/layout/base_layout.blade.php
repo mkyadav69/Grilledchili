@@ -34,7 +34,7 @@
     <link href="{{asset('vendor/slick/slick.css')}}" rel="stylesheet" media="all">
     <link href="{{asset('vendor/select2/select2.min.css')}}" rel="stylesheet" media="all">
     <link href="{{asset('vendor/perfect-scrollbar/perfect-scrollbar.css')}}" rel="stylesheet" media="all">
-    <link href="{{asset('css/bootstrap-datepicker.min.css')}}" rel="stylesheet" media="all">
+    <link href="{{asset('css/daterangepicker.css')}}" rel="stylesheet" media="all">    
     <link href="{{asset('css/jquery-ui.css')}}" rel="stylesheet" media="all">
     <!-- Main CSS-->
     
@@ -44,14 +44,11 @@
     <!-- Bootstrap JS-->
     
     <script src="{{asset('js/jquery-ui.min.js')}}"></script>
-    <script src="{{asset('js/bootstrap-datepicker.min.js')}}"></script>
+    <script src="{{asset('js/moment.min.js')}}"></script>
+    <script src="{{asset('js/daterangepicker.min.js')}}"></script>
     <script src="{{asset('vendor/bootstrap-4.1/popper.min.js')}}"></script>
     <script src="{{asset('vendor/bootstrap-4.1/bootstrap.min.js')}}"></script>
-
-
-    <!-- <script src="https://cdn.datatables.net/buttons/1.7.0/js/dataTables.buttons.min.js"></script>
-    <script src="https://cdn.datatables.net/buttons/1.7.0/js/dataTables.buttons.min.js"></script> -->
-
+    
 
 </head>
 <style>
@@ -196,6 +193,14 @@ table.dataTable {
                 @yield('viewModal')
             </div>
         </div>
+
+        <div class="modal fade" id="selectTruck" tabindex="-1" role="dialog" aria-labelledby="largeModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg" role="document">
+                @yield('selectTruck')
+            </div>
+        </div>
+        
+
         
 
         
@@ -231,6 +236,9 @@ table.dataTable {
             }); 
         });
     </script>
+     @yield('script')
+
+
 </body>
 
 </html>

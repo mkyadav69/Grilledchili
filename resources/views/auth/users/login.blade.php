@@ -41,6 +41,7 @@
                 </button>
             </div>
         @endif
+        
         <div class="form-group">
             <label class="required">Password</label>
             <input class="au-input au-input--full" type="password" required name="password" placeholder="Password">
@@ -54,6 +55,21 @@
                 </button>
             </div>
         @endif
+
+        <div class="form-group">
+            <label class="required">OPT</label>
+            <input type="button"class="btn btn-primary" title="Get OTP"type="password" required name="password" placeholder="Password">
+        </div>
+        @if ($errors->has('password'))
+            <div class="sufee-alert alert with-close alert-danger alert-dismissible fade show">
+                <span class="badge badge-pill badge-danger">Error</span>
+                {{ $errors->first('password') }}
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        @endif
+
         <div class="login-checkbox">
             <label>
                 <input type="checkbox" name="remember">Remember Me

@@ -4,7 +4,7 @@
 
                 <li class="{{ request()->is('/') ? 'active' : '' }} has-sub">
                     <a class="js-arrow" href="{{route('dashboard')}}">
-                        <i class="fas  fa-home"></i>Dashboard</a>
+                        <i class="fas  fa-tv"></i>Dashboard</a>
                 </li>
 
                 <li class="{{ request()->is('show-trucks') ? 'active' : '' }} has-sub">

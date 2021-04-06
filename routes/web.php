@@ -14,6 +14,7 @@ Route::get('logout', [AuthController::class, 'logout'])->name('logout');
 
 # 2. Dashboard
 Route::get('/', [DashboardController::class, 'dashboard'])->name('dashboard');
+Route::get('get-data', [DashboardController::class, 'getData'])->name('get_data');
 
 
 # **************** GrilledChili  route & functions **************
