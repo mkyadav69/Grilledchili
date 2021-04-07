@@ -34,21 +34,29 @@ class DashboardController extends Controller
     }
     public function dashboard(){
         $trucks = Truck::query();
-
         # Monthy Reports
-        $last_month_data = Order::whereYear('created_at', Carbon::now()->year)->whereMonth('created_at', '=', Carbon::now()->subMonth()->month)->where('order_status', 'Accepted')->sum('total');
-        $current_month_data = Order::whereYear('created_at', Carbon::now()->year)->whereMonth('created_at', '=', Carbon::now()->month)->where('order_status', 'Accepted')->sum('total');
+        $last_month_data = Order::whereYear('created_at', Carbon::now()->year)->whereMonth('created_at', '=', Carbon::now()->subMonth()->month)->where('order_delivered', 1)->sum('total');
+        $current_month_data = Order::whereYear('created_at', Carbon::now()->year)->whereMonth('created_at', '=', Carbon::now()->month)->where('order_delivered', 1)->sum('total');
         $last_month_name = Carbon::now()->subMonth()->format('F');
         $current_month_name = Carbon::now()->format('F');
         $data = [
             'data' =>[
-                'data1'=>[$current_month_data],
-                'data2'=> [$last_month_data]
+                'data1'=>[$current_month_data, $current_month_data],
+                'data2'=> [$last_month_data, $last_month_data]
             ], 
             'labels'=>[$last_month_name, $current_month_name],
+            'total_amount'=>$current_month_data+$last_month_data,
         ];
+        $ratio = [];
+        if($current_month_data > $last_month_data){
+            $ratio['increases_by'] = ($current_month_data-$last_month_data)/100;
+            $ratio['month'] =  $current_month_name;
+        }else if($last_month_data > $current_month_data){
+            $ratio['decreases_by'] = ($last_month_data-$current_month_data)/100;
+            $ratio['month'] =  'By Last '.$last_month_name;
+        }
+        // dd($current_month_data, $last_month_name);
         $report = json_encode($data);
-
         # Sale Report
         $item_array =[];
         $items = Order::with('orderItem')->whereYear('created_at', Carbon::now()->year)->whereMonth('created_at', '=', Carbon::now()->subMonth()->month)->get();
@@ -88,15 +96,39 @@ class DashboardController extends Controller
         
         $sale_data_per = json_encode($graph_data);
         if(!empty($trucks)){
-            $trucks = $trucks->pluck('name', 'id')->toArray();
-        }
-        return view('merchant.dashboard', compact('trucks', 'report', 'sale_data_per', 'sale'));
-    }
+            $response = [];
+            $ui_date = null;
+            # multiple truck
+            // $trucks  = $trucks->pluck('name', 'id')->toArray();
+            #Single truck
+            $trucks = ['1'=>'TEST TRUCK'];
 
+            $check_truck_count  = count($trucks);
+            if($check_truck_count == 1){
+                $truck_key = array_keys($trucks)[0];
+                $yesterday = Carbon::yesterday()->format('Y-m-d');
+                $ui_date = Carbon::yesterday()->format('d-m-Y');
+                $order_details = Order::where('truck_id', $truck_key)->whereDate('created_at', $yesterday);
+                $columns = ['order_placed', 'order_accepted', 'order_ready', 'order_cancelled', 'order_delivered', 'order_rejected'];
+                $order_details  = $order_details->get();
+                foreach($columns as $column) {
+                    $response[$column] = $order_details->where($column, 1)->count();
+                }
+                $revenue = $order_details->where('order_delivered', 1)->sum('total');
+                $total_order = count($order_details);
+                $response['total_revenue'] = $revenue;
+                $response['total_order'] = $total_order;
+            }
+        }
+        return view('merchant.dashboard', compact('trucks', 'report', 'sale_data_per', 'sale', 'response', 'check_truck_count', 'ratio', 'ui_date'));
+    }
+    
     public function getData(Request $request){
         $data = $request->all();
+        $month = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
         $response = [];
-        $orders = Order::query();
+
+        $orders = Order::whereYear('created_at', Carbon::now()->year);
         $columns = ['order_placed', 'order_accepted', 'order_ready', 'order_cancelled', 'order_delivered', 'order_rejected'];
         if(!empty($data['date_range'])){
             $sep_date = explode("|", $data['date_range']);
@@ -112,14 +144,72 @@ class DashboardController extends Controller
         if(!empty($data['truck_id'])){
             $orders->where('truck_id', $data['truck_id']);
         }
+        if(!empty($data['singel_truck'])){
+            $yesterday = Carbon::yesterday()->format('Y-m-d');
+            $orders->whereDate('created_at', $yesterday);
+        }
         $get_order = $orders->get();
         foreach($columns as $column) {
-            $response[$column] = $get_order->where($column, 1)->count();
+            $status_wise_data = [];
+            $order_data_set = $get_order->where($column, 1)->groupBy(function($d) {
+                return Carbon::parse($d->created_at)->format('M');
+            });
+            $get_temp_data = [];
+            $moth_data = [];
+            foreach ($order_data_set as $key => $value) {
+                $get_temp_data[$key] = count($value);
+            }
+            foreach($month as $m){
+                if(!empty($get_temp_data[$m])){
+                    $moth_data[$m] = $get_temp_data[$m];    
+                }else{
+                    $moth_data[$m] = 0;    
+                }
+            }
+            $status_wise_data['count'] = $get_order->where($column, 1)->count();
+            $status_wise_data['monthly_data'] = json_encode($moth_data);
+            $response[$column] = $status_wise_data;
         }
-        $revenue = $get_order->where('order_delivered', 1)->sum('total');
-        $total_order = $response['order_placed'] + $response['order_accepted'] + $response['order_ready'] + $response['order_cancelled'] + $response['order_delivered'] + $response['order_rejected'];
+        $total_order = count($orders->get());
+        # Calcutae all trucks revenue and revenue by month wise
+        $test = [];
+        $order_dataset = $orders->where('order_delivered', 1)->get()->groupBy(function($d) {
+            return Carbon::parse($d->created_at)->format('M');
+        });
+        $get_tempdata = [];
+        $mdata = [];
+        foreach ($order_dataset as $key => $value) {
+            $total_by_month = array_sum(array_column($value->toarray(), 'total'));
+            $get_tempdata[$key] = $total_by_month;
+        }
+        foreach($month as $m){
+            if(!empty($get_tempdata[$m])){
+                $mdata[$m] = $get_tempdata[$m];    
+            }else{
+                $mdata[$m] = 0;    
+            }
+        }
+        
+        $all_temp_data = [];
+        $all_month_data = [];
+        $all_total_order = $orders->get()->groupBy(function($d) {
+            return Carbon::parse($d->created_at)->format('M');
+        });
+        foreach ($all_total_order as $key => $value) {
+            $all_temp_data[$key] = count($value);
+        }
+        foreach($month as $m){
+            if(!empty($all_temp_data[$m])){
+                $all_month_data[$m] = $all_temp_data[$m];    
+            }else{
+                $all_month_data[$m] = 0;    
+            }
+        }
+        $revenue = $orders->where('order_delivered', 1)->sum('total');
         $response['total_revenue'] = $revenue;
         $response['total_order'] = $total_order;
+        $response['all_month_data'] =  json_encode($all_month_data);
+        $response['month_wise_revenue'] =  json_encode($mdata);
         return response()->json(['data' => $response, 'code'=>200]);
     }
 }

@@ -1,6 +1,14 @@
 @extends('theme.layout.base_layout')
 @section('title', 'Dashboard')
 @section('content')
+<style>
+.percent-chart{
+    display: block;
+    width: 600px;
+    height: 600px;
+    padding-left: 100px;
+}
+</style>
 <div class="row">
     @if (session()->has('customer_message'))
         <div class="sufee-alert alert with-close alert-success alert-dismissible fade show">
@@ -46,7 +54,7 @@
                         <i class="fa fa-calendar"></i>&nbsp;
                     </div>
                     <div class="col-11">
-                        <input type="text" name="datefilter" required id="datefilter" class="form-control" placeholder="DD-MM-YYY" />
+                        <input type="text" name="datefilter" required id="datefilter" class="form-control" value="{{ $ui_date }}" placeholder="DD-MM-YYY" />
                     </div>
                 </div>
 
@@ -68,13 +76,14 @@
                         <i class="zmdi zmdi-shopping-cart"></i>
                     </div>
                     <div class="text">
-                        <h2 class="total_order"></h2>
+                        <h2 class="total_order">{{!empty($response['total_order']) ? $response['total_order'] : 0}}</h2>
                         <span>total order</span>
                     </div>
                 </div>
                 <div class="overview-chart">
                     <canvas id="widgetChart1"></canvas>
                 </div>
+                <input type="hidden" name="all_month_data" id="all_month_data">
             </div>
         </div>
     </div>
@@ -87,13 +96,14 @@
                         <i class="zmdi zmdi-shopping-cart"></i>
                     </div>
                     <div class="text">
-                    <h2 class="place_order"></h2>
+                    <h2 class="place_order">{{!empty($response['order_placed']) ? $response['order_placed'] : 0}}</h2>
                         <span>order placed</span>
                     </div>
                 </div>
                 <div class="overview-chart">
                     <canvas id="widgetChart2"></canvas>
                 </div>
+                <input type="hidden" name="placed" id="placed">
             </div>
         </div>
     </div>
@@ -106,16 +116,18 @@
                         <i class="zmdi zmdi-shopping-cart"></i>
                     </div>
                     <div class="text">
-                        <h2 class="accepted_order"></h2>
+                        <h2 class="accepted_order">{{!empty($response['order_accepted']) ? $response['order_accepted'] : 0}}</h2>
                         <span>order accepted</span>
                     </div>
                 </div>
                 <div class="overview-chart">
-                    <canvas id="widgetChart2"></canvas>
+                    <canvas id="widgetChart3"></canvas>
                 </div>
+                <input type="hidden" name="accepted" id="accepted">
             </div>
         </div>
     </div>
+
     <div class="col-sm-6 col-lg-3">
         <div class="overview-item overview-item--c3">
             <div class="overview__inner">
@@ -124,13 +136,14 @@
                         <i class="zmdi zmdi-shopping-cart"></i>
                     </div>
                     <div class="text">
-                        <h2 class="rejected_order"></h2>
+                        <h2 class="rejected_order">{{!empty($response['order_rejected']) ? $response['order_rejected'] : 0}}</h2>
                         <span>order rejected</span>
                     </div>
                 </div>
                 <div class="overview-chart">
-                    <canvas id="widgetChart3"></canvas>
+                    <canvas id="widgetChart4"></canvas>
                 </div>
+                <input type="hidden" name="report" id="rejected">
             </div>
         </div>
     </div>
@@ -144,13 +157,15 @@
                         <i class="zmdi zmdi-shopping-cart"></i>
                     </div>
                     <div class="text">
-                    <h2 class="total_revenue"></h2>
+                    <h2 class="total_revenue">{{!empty($response['total_revenue']) ? $response['total_revenue'] : 0}}</h2>
                         <span>truck revenue</span>
                     </div>
                 </div>
                 <div class="overview-chart">
-                    <canvas id="widgetChart2"></canvas>
+                    <canvas id="widgetChart9"></canvas>
                 </div>
+                <input type="hidden" name="month_wise_revenue" id="month_wise_revenue">
+                
             </div>
         </div>
     </div>
@@ -163,12 +178,13 @@
                         <i class="zmdi zmdi-shopping-cart"></i>
                     </div>
                     <div class="text">
-                        <h2 class="delivered_order"></h2>
+                        <h2 class="delivered_order">{{!empty($response['order_delivered']) ? $response['order_delivered'] : 0}}</h2>
                         <span>order deliverd</span>
                     </div>
+                    <input type="hidden" name="report" id="delivered">
                 </div>
                 <div class="overview-chart">
-                    <canvas id="widgetChart2"></canvas>
+                    <canvas id="widgetChart6"></canvas>
                 </div>
             </div>
         </div>
@@ -182,17 +198,17 @@
                         <i class="zmdi zmdi-shopping-cart"></i>
                     </div>
                     <div class="text">
-                        <h2 class="ready_order"></h2>
+                        <h2 class="ready_order">{{!empty($response['order_ready']) ? $response['order_ready'] : 0}}</h2>
                         <span>order ready</span>
                     </div>
                 </div>
                 <div class="overview-chart">
-                    <canvas id="widgetChart2"></canvas>
+                    <canvas id="widgetChart7"></canvas>
                 </div>
+                <input type="hidden" name="report" id="ready">
             </div>
         </div>
     </div>
-
     <div class="col-sm-6 col-lg-3">
         <div class="overview-item overview-item--c3">
             <div class="overview__inner">
@@ -201,13 +217,14 @@
                         <i class="zmdi zmdi-shopping-cart"></i>
                     </div>
                     <div class="text">
-                        <h2 class="cancel_order"></h2>
+                        <h2 class="cancel_order">{{!empty($response['order_cancelled']) ? $response['order_cancelled'] : 0}}</h2>
                         <span>order cancel</span>
                     </div>
                 </div>
                 <div class="overview-chart">
-                    <canvas id="widgetChart3"></canvas>
+                    <canvas id="widgetChart8"></canvas>
                 </div>
+                <input type="hidden" name="cancel" id="cancel">
             </div>
         </div>
     </div>
@@ -218,27 +235,39 @@
             <div class="au-card-inner">
                 <h3 class="title-2">Monthly reports</h3>
                 <div class="chart-info">
-                    <div class="chart-info__left">
-                        <div class="chart-note">
-                            <span class="dot dot--blue"></span>
-                            <span>current month</span>
+                   
+                    <div class="col-xl-4">
+                        <div class="chart-note-wrap">
+                            <div class="chart-note mr-0 d-block">
+                                <span class="dot dot--blue"></span>
+                                <span>current month</span>
+                            </div>
                         </div>
-                        <div class="chart-note mr-0">
-                            <span class="dot dot--green"></span>
-                            <span>last month</span>
+                    </div>
+
+                    <div class="col-xl-4">
+                        <div class="chart-note-wrap">
+                            <div class="chart-note mr-0 d-block">
+                                <span class="dot dot--green"></span>
+                                <span>last month</span>
+                            </div>
                         </div>
                     </div>
                     <div class="chart-info__right">
-                        <div class="chart-statis">
-                            <span class="index incre">
-                                <i class="zmdi zmdi-long-arrow-up"></i>25%</span>
-                            <span class="label">current month</span>
-                        </div>
-                        <div class="chart-statis mr-0">
-                            <span class="index decre">
-                                <i class="zmdi zmdi-long-arrow-down"></i>10%</span>
-                            <span class="label">last month</span>
-                        </div>
+                        @if(!empty($ratio['increases_by']))
+                            <div class="chart-statis">
+                                <span class="index incre">
+                                    <i class="zmdi zmdi-long-arrow-up"></i>{{ $ratio['increases_by']}} %</span>
+                                <span class="label">{{ $ratio['month']}} </span>
+                            </div>
+                        @endif
+                        @if(!empty($ratio['decreases_by']))
+                            <div class="chart-statis mr-0">
+                                <span class="index decre">
+                                    <i class="zmdi zmdi-long-arrow-down"></i>{{$ratio['decreases_by']}} %</span>
+                                <span class="label">{{ $ratio['month']}}</span>
+                            </div>
+                        @endif
                     </div>
                 </div>
                 <div class="recent-report__chart">
@@ -255,7 +284,6 @@
                 <div class="row no-gutters">
                         @if(!empty($sale))
                            @foreach($sale['labels'] as $label)
-                                
                                 <div class="col-xl-6">
                                     <div class="chart-note-wrap">
                                         <div class="chart-note mr-0 d-block">
@@ -266,142 +294,12 @@
                                 </div>
                             @endforeach
                         @endif
-                    <div class="col-xl-6">
-                        <div class="percent-chart">
-                            <canvas id="percent-chart"></canvas>
+                        <div class="col-xl-6">
+                            <div class="percent-chart">
+                                <canvas id="percent-chart"></canvas>
+                            </div>
+                            <input type="hidden" value="{{$sale_data_per}}" name="sale_data_per", id="sale_data_per">
                         </div>
-                        <input type="hidden" value="{{$sale_data_per}}" name="sale_data_per", id="sale_data_per">
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-<div class="row">
-    <div class="col-lg-9">
-        <h2 class="title-1 m-b-25">Earnings By Items</h2>
-        <div class="table-responsive table--no-card m-b-40">
-            <table class="table table-borderless table-striped table-earning">
-                <thead>
-                    <tr>
-                        <th>date</th>
-                        <th>order ID</th>
-                        <th>name</th>
-                        <th class="text-right">price</th>
-                        <th class="text-right">quantity</th>
-                        <th class="text-right">total</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>2018-09-29 05:57</td>
-                        <td>100398</td>
-                        <td>iPhone X 64Gb Grey</td>
-                        <td class="text-right">$999.00</td>
-                        <td class="text-right">1</td>
-                        <td class="text-right">$999.00</td>
-                    </tr>
-                    <tr>
-                        <td>2018-09-28 01:22</td>
-                        <td>100397</td>
-                        <td>Samsung S8 Black</td>
-                        <td class="text-right">$756.00</td>
-                        <td class="text-right">1</td>
-                        <td class="text-right">$756.00</td>
-                    </tr>
-                    <tr>
-                        <td>2018-09-27 02:12</td>
-                        <td>100396</td>
-                        <td>Game Console Controller</td>
-                        <td class="text-right">$22.00</td>
-                        <td class="text-right">2</td>
-                        <td class="text-right">$44.00</td>
-                    </tr>
-                    <tr>
-                        <td>2018-09-26 23:06</td>
-                        <td>100395</td>
-                        <td>iPhone X 256Gb Black</td>
-                        <td class="text-right">$1199.00</td>
-                        <td class="text-right">1</td>
-                        <td class="text-right">$1199.00</td>
-                    </tr>
-                    <tr>
-                        <td>2018-09-25 19:03</td>
-                        <td>100393</td>
-                        <td>USB 3.0 Cable</td>
-                        <td class="text-right">$10.00</td>
-                        <td class="text-right">3</td>
-                        <td class="text-right">$30.00</td>
-                    </tr>
-                    <tr>
-                        <td>2018-09-29 05:57</td>
-                        <td>100392</td>
-                        <td>Smartwatch 4.0 LTE Wifi</td>
-                        <td class="text-right">$199.00</td>
-                        <td class="text-right">6</td>
-                        <td class="text-right">$1494.00</td>
-                    </tr>
-                    <tr>
-                        <td>2018-09-24 19:10</td>
-                        <td>100391</td>
-                        <td>Camera C430W 4k</td>
-                        <td class="text-right">$699.00</td>
-                        <td class="text-right">1</td>
-                        <td class="text-right">$699.00</td>
-                    </tr>
-                    <tr>
-                        <td>2018-09-22 00:43</td>
-                        <td>100393</td>
-                        <td>USB 3.0 Cable</td>
-                        <td class="text-right">$10.00</td>
-                        <td class="text-right">3</td>
-                        <td class="text-right">$30.00</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
-    <div class="col-lg-3">
-        <h2 class="title-1 m-b-25">Top countries</h2>
-        <div class="au-card au-card--bg-blue au-card-top-countries m-b-40">
-            <div class="au-card-inner">
-                <div class="table-responsive">
-                    <table class="table table-top-countries">
-                        <tbody>
-                            <tr>
-                                <td>United States</td>
-                                <td class="text-right">$119,366.96</td>
-                            </tr>
-                            <tr>
-                                <td>Australia</td>
-                                <td class="text-right">$70,261.65</td>
-                            </tr>
-                            <tr>
-                                <td>United Kingdom</td>
-                                <td class="text-right">$46,399.22</td>
-                            </tr>
-                            <tr>
-                                <td>Turkey</td>
-                                <td class="text-right">$35,364.90</td>
-                            </tr>
-                            <tr>
-                                <td>Germany</td>
-                                <td class="text-right">$20,366.96</td>
-                            </tr>
-                            <tr>
-                                <td>France</td>
-                                <td class="text-right">$10,366.96</td>
-                            </tr>
-                            <tr>
-                                <td>Australia</td>
-                                <td class="text-right">$5,366.96</td>
-                            </tr>
-                            <tr>
-                                <td>Italy</td>
-                                <td class="text-right">$1639.32</td>
-                            </tr>
-                        </tbody>
-                    </table>
                 </div>
             </div>
         </div>
@@ -411,53 +309,724 @@
 
 <script>
 $(document).ready(function(){
+    var truck_count = "{{$check_truck_count}}";
+
+    $('#datefilter').on('change', function(){
+        var date_range = $('#datefilter').val();
+        var trucks_id = $("#trucks option:selected").val();
+        if(truck_count > 1){
+            if(trucks_id != '' && date_range == ''){
+                var ajaxcall = ajaxCall('', trucks_id);
+            }
+        }else{
+            var ajaxcall = ajaxCall('', trucks_id, 'single_truck');
+        }
+    });
+    function chart1(){
+        //WidgetChart 1
+        var ctx = document.getElementById("widgetChart1");
+        var all_month_data = document.getElementById("all_month_data").value;
+        var decode= JSON.parse(all_month_data);
+        var month = Object.keys(decode);
+        var value = Object.values(decode);
+        if (ctx) {
+        ctx.height = 130;
+        var myChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+            labels: month,
+            type: 'line',
+            datasets: [{
+                data: value,
+                label: 'Order',
+                backgroundColor: 'transparent',
+                borderColor: 'rgba(255,255,255,.55)',
+            },]
+            },
+            options: {
+
+            maintainAspectRatio: false,
+            legend: {
+                display: false
+            },
+            responsive: true,
+            tooltips: {
+                mode: 'index',
+                titleFontSize: 12,
+                titleFontColor: '#000',
+                bodyFontColor: '#000',
+                backgroundColor: '#fff',
+                titleFontFamily: 'Montserrat',
+                bodyFontFamily: 'Montserrat',
+                cornerRadius: 3,
+                intersect: false,
+            },
+            scales: {
+                xAxes: [{
+                gridLines: {
+                    color: 'transparent',
+                    zeroLineColor: 'transparent'
+                },
+                ticks: {
+                    fontSize: 2,
+                    fontColor: 'transparent'
+                }
+                }],
+                yAxes: [{
+                display: false,
+                ticks: {
+                    display: false,
+                }
+                }]
+            },
+            title: {
+                display: false,
+            },
+            elements: {
+                line: {
+                tension: 0.00001,
+                borderWidth: 1
+                },
+                point: {
+                radius: 4,
+                hitRadius: 10,
+                hoverRadius: 4
+                }
+            }
+            }
+        });
+        }
+    }
+
+    function chart2(){
+        //WidgetChart 2
+        var ctx = document.getElementById("widgetChart2");
+        var placed = document.getElementById("placed").value;
+        var decode= JSON.parse(placed);
+        var month = Object.keys(decode);
+        var value = Object.values(decode);
+        if (ctx) {
+        ctx.height = 130;
+        var myChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+            labels: month,
+            type: 'line',
+            datasets: [{
+                data: value,
+                label: 'Placed order',
+                backgroundColor: 'transparent',
+                borderColor: 'rgba(255,255,255,.55)',
+            },]
+            },
+            options: {
+
+            maintainAspectRatio: false,
+            legend: {
+                display: false
+            },
+            responsive: true,
+            tooltips: {
+                mode: 'index',
+                titleFontSize: 12,
+                titleFontColor: '#000',
+                bodyFontColor: '#000',
+                backgroundColor: '#fff',
+                titleFontFamily: 'Montserrat',
+                bodyFontFamily: 'Montserrat',
+                cornerRadius: 3,
+                intersect: false,
+            },
+            scales: {
+                xAxes: [{
+                gridLines: {
+                    color: 'transparent',
+                    zeroLineColor: 'transparent'
+                },
+                ticks: {
+                    fontSize: 2,
+                    fontColor: 'transparent'
+                }
+                }],
+                yAxes: [{
+                display: false,
+                ticks: {
+                    display: false,
+                }
+                }]
+            },
+            title: {
+                display: false,
+            },
+            elements: {
+                line: {
+                tension: 0.00001,
+                borderWidth: 1
+                },
+                point: {
+                radius: 4,
+                hitRadius: 10,
+                hoverRadius: 4
+                }
+            }
+            }
+        });
+        }
+    }
+
+    function chart3(){
+        //WidgetChart 3
+        var ctx = document.getElementById("widgetChart3");
+        var accepted = document.getElementById("accepted").value;
+        var decode= JSON.parse(accepted);
+        var month = Object.keys(decode);
+        var value = Object.values(decode);
+        if (ctx) {
+        ctx.height = 130;
+        var myChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+            labels: month,
+            type: 'line',
+            datasets: [{
+                data: value,
+                label: 'Accepted orders',
+                backgroundColor: 'transparent',
+                borderColor: 'rgba(255,255,255,.55)',
+            },]
+            },
+            options: {
+
+            maintainAspectRatio: false,
+            legend: {
+                display: false
+            },
+            responsive: true,
+            tooltips: {
+                mode: 'index',
+                titleFontSize: 12,
+                titleFontColor: '#000',
+                bodyFontColor: '#000',
+                backgroundColor: '#fff',
+                titleFontFamily: 'Montserrat',
+                bodyFontFamily: 'Montserrat',
+                cornerRadius: 3,
+                intersect: false,
+            },
+            scales: {
+                xAxes: [{
+                gridLines: {
+                    color: 'transparent',
+                    zeroLineColor: 'transparent'
+                },
+                ticks: {
+                    fontSize: 2,
+                    fontColor: 'transparent'
+                }
+                }],
+                yAxes: [{
+                display: false,
+                ticks: {
+                    display: false,
+                }
+                }]
+            },
+            title: {
+                display: false,
+            },
+            elements: {
+                line: {
+                tension: 0.00001,
+                borderWidth: 1
+                },
+                point: {
+                radius: 4,
+                hitRadius: 10,
+                hoverRadius: 4
+                }
+            }
+            }
+        });
+        }
+    }
+
+    function chart4(){
+        var ctx = document.getElementById("widgetChart4");
+        var rejected = document.getElementById("rejected").value;
+        var decode= JSON.parse(rejected);
+        var month = Object.keys(decode);
+        var value = Object.values(decode);
+        if (ctx) {
+        ctx.height = 130;
+        var myChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+            labels: month,
+            type: 'line',
+            datasets: [{
+                data: value,
+                label: 'Rejected orders',
+                backgroundColor: 'transparent',
+                borderColor: 'rgba(255,255,255,.55)',
+            },]
+            },
+            options: {
+
+            maintainAspectRatio: false,
+            legend: {
+                display: false
+            },
+            responsive: true,
+            tooltips: {
+                mode: 'index',
+                titleFontSize: 12,
+                titleFontColor: '#000',
+                bodyFontColor: '#000',
+                backgroundColor: '#fff',
+                titleFontFamily: 'Montserrat',
+                bodyFontFamily: 'Montserrat',
+                cornerRadius: 3,
+                intersect: false,
+            },
+            scales: {
+                xAxes: [{
+                gridLines: {
+                    color: 'transparent',
+                    zeroLineColor: 'transparent'
+                },
+                ticks: {
+                    fontSize: 2,
+                    fontColor: 'transparent'
+                }
+                }],
+                yAxes: [{
+                display: false,
+                ticks: {
+                    display: false,
+                }
+                }]
+            },
+            title: {
+                display: false,
+            },
+            elements: {
+                line: {
+                borderWidth: 1
+                },
+                point: {
+                radius: 4,
+                hitRadius: 10,
+                hoverRadius: 4
+                }
+            }
+            }
+        });
+        }
+    }
+
+    function chart6(){
+       // WidgetChart 6
+        var ctx = document.getElementById("widgetChart6");
+        var delivered = document.getElementById("delivered").value;
+        var decode= JSON.parse(delivered);
+        var month = Object.keys(decode);
+        var value = Object.values(decode);
+        if (ctx) {
+        ctx.height = 130;
+        var myChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+            labels: month,
+            type: 'line',
+            datasets: [{
+                data: value,
+                label: 'Delivered orders',
+                backgroundColor: 'transparent',
+                borderColor: 'rgba(255,255,255,.55)',
+            },]
+            },
+            options: {
+
+            maintainAspectRatio: false,
+            legend: {
+                display: false
+            },
+            responsive: true,
+            tooltips: {
+                mode: 'index',
+                titleFontSize: 12,
+                titleFontColor: '#000',
+                bodyFontColor: '#000',
+                backgroundColor: '#fff',
+                titleFontFamily: 'Montserrat',
+                bodyFontFamily: 'Montserrat',
+                cornerRadius: 3,
+                intersect: false,
+            },
+            scales: {
+                xAxes: [{
+                gridLines: {
+                    color: 'transparent',
+                    zeroLineColor: 'transparent'
+                },
+                ticks: {
+                    fontSize: 2,
+                    fontColor: 'transparent'
+                }
+                }],
+                yAxes: [{
+                display: false,
+                ticks: {
+                    display: false,
+                }
+                }]
+            },
+            title: {
+                display: false,
+            },
+            elements: {
+                line: {
+                borderWidth: 1
+                },
+                point: {
+                radius: 4,
+                hitRadius: 10,
+                hoverRadius: 4
+                }
+            }
+            }
+        });
+        }
+    }
+
+    function chart7(){
+        //WidgetChart 7
+        var ctx = document.getElementById("widgetChart7");
+        var ready = document.getElementById("ready").value;
+        var decode= JSON.parse(ready);
+        var month = Object.keys(decode);
+        var value = Object.values(decode);
+        if (ctx) {
+        ctx.height = 130;
+        var myChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+            labels: month,
+            type: 'line',
+            datasets: [{
+                data: value,
+                label: 'Ready orders',
+                backgroundColor: 'transparent',
+                borderColor: 'rgba(255,255,255,.55)',
+            },]
+            },
+            options: {
+
+            maintainAspectRatio: false,
+            legend: {
+                display: false
+            },
+            responsive: true,
+            tooltips: {
+                mode: 'index',
+                titleFontSize: 12,
+                titleFontColor: '#000',
+                bodyFontColor: '#000',
+                backgroundColor: '#fff',
+                titleFontFamily: 'Montserrat',
+                bodyFontFamily: 'Montserrat',
+                cornerRadius: 3,
+                intersect: false,
+            },
+            scales: {
+                xAxes: [{
+                gridLines: {
+                    color: 'transparent',
+                    zeroLineColor: 'transparent'
+                },
+                ticks: {
+                    fontSize: 2,
+                    fontColor: 'transparent'
+                }
+                }],
+                yAxes: [{
+                display: false,
+                ticks: {
+                    display: false,
+                }
+                }]
+            },
+            title: {
+                display: false,
+            },
+            elements: {
+                line: {
+                borderWidth: 1
+                },
+                point: {
+                radius: 4,
+                hitRadius: 10,
+                hoverRadius: 4
+                }
+            }
+            }
+        });
+        }
+    }
+
+    function chart8(){
+        //WidgetChart 8
+        var ctx = document.getElementById("widgetChart8");
+        var cancel = document.getElementById("cancel").value;
+        var decode= JSON.parse(cancel);
+        var month = Object.keys(decode);
+        var value = Object.values(decode);
+        if (ctx) {
+            ctx.height = 130;
+            var myChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: month,
+                type: 'line',
+                datasets: [{
+                data: value,
+                label: 'Cancel orders',
+                backgroundColor: 'transparent',
+                borderColor: 'rgba(255,255,255,.55)',
+                },]
+            },
+            options: {
+
+                maintainAspectRatio: false,
+                legend: {
+                display: false
+                },
+                responsive: true,
+                tooltips: {
+                mode: 'index',
+                titleFontSize: 12,
+                titleFontColor: '#000',
+                bodyFontColor: '#000',
+                backgroundColor: '#fff',
+                titleFontFamily: 'Montserrat',
+                bodyFontFamily: 'Montserrat',
+                cornerRadius: 3,
+                intersect: false,
+                },
+                scales: {
+                xAxes: [{
+                    gridLines: {
+                    color: 'transparent',
+                    zeroLineColor: 'transparent'
+                    },
+                    ticks: {
+                    fontSize: 2,
+                    fontColor: 'transparent'
+                    }
+                }],
+                yAxes: [{
+                    display: false,
+                    ticks: {
+                    display: false,
+                    }
+                }]
+                },
+                title: {
+                display: false,
+                },
+                elements: {
+                line: {
+                    borderWidth: 1
+                },
+                point: {
+                    radius: 4,
+                    hitRadius: 10,
+                    hoverRadius: 4
+                }
+                }
+            }
+            });
+        }
+    }
+
+    function chart9(){
+        //WidgetChart 9
+        var ctx = document.getElementById("widgetChart9");
+        var month_wise_revenue = document.getElementById("month_wise_revenue").value;
+        var decode= JSON.parse(month_wise_revenue);
+        var month = Object.keys(decode);
+        var value = Object.values(decode);
+        if (ctx) {
+            ctx.height = 130;
+            var myChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: month,
+                type: 'line',
+                datasets: [{
+                data: value,
+                label: 'Truck revenue',
+                backgroundColor: 'transparent',
+                borderColor: 'rgba(255,255,255,.55)',
+                },]
+            },
+            options: {
+
+                maintainAspectRatio: false,
+                legend: {
+                display: false
+                },
+                responsive: true,
+                tooltips: {
+                mode: 'index',
+                titleFontSize: 12,
+                titleFontColor: '#000',
+                bodyFontColor: '#000',
+                backgroundColor: '#fff',
+                titleFontFamily: 'Montserrat',
+                bodyFontFamily: 'Montserrat',
+                cornerRadius: 3,
+                intersect: false,
+                },
+                scales: {
+                xAxes: [{
+                    gridLines: {
+                    color: 'transparent',
+                    zeroLineColor: 'transparent'
+                    },
+                    ticks: {
+                    fontSize: 2,
+                    fontColor: 'transparent'
+                    }
+                }],
+                yAxes: [{
+                    display: false,
+                    ticks: {
+                    display: false,
+                    }
+                }]
+                },
+                title: {
+                display: false,
+                },
+                elements: {
+                line: {
+                    borderWidth: 1
+                },
+                point: {
+                    radius: 4,
+                    hitRadius: 10,
+                    hoverRadius: 4
+                }
+                }
+            }
+            });
+        }
+    }
     var date_range = $('#datefilter').val();
     var trucks_id = $( "#trucks option:selected" ).val();
-    var ajaxcall = ajaxCall(date_range, trucks_id);
-    function ajaxCall(date_range, truck_id){
-        var path = "{{route('get_data')}}"
+    
+    $('input[name="datefilter"]').daterangepicker({
+        autoUpdateInput: false,
+        locale: {
+            cancelLabel: 'Clear',
+            format: 'DD-MM-YYYY'
+        }
+    });
+    
+    function ajaxCall(date_range, truck_id, singel_truck){
+        var path = "{{route('get_data')}}";
         $.ajax({
                 url:path,
                 type:'GET',
                 dataType: 'json',
-                data: {'date_range' : date_range, 'truck_id' : truck_id},
+                data: {'date_range' : date_range, 'truck_id' : truck_id, 'singel_truck' : singel_truck},
                 success: function(response) {
-                    console.log("lll");
-                    console.log(response);
                     if(response.code == 200){
                         var res = response.data;
+                        console.log("kk");
+                        console.log(res);
                         $('.total_order').html(res.total_order);
-                        $('.place_order').html(res.order_placed);
-                        $('.accepted_order').html(res.order_accepted);
-                        $('.rejected_order').html(res.order_rejected);
-                        $('.delivered_order').html(res.order_delivered);
-                        $('.ready_order').html(res.order_ready);
-                        $('.cancel_order').html(res.order_cancelled);
+                        $('.place_order').html(res.order_placed.count);
+                        $('.accepted_order').html(res.order_accepted.count);
+                        $('.rejected_order').html(res.order_rejected.count);
+                        $('.delivered_order').html(res.order_delivered.count);
+                        $('.ready_order').html(res.order_ready.count);
+                        $('.cancel_order').html(res.order_cancelled.count);
                         $('.total_revenue').html(res.total_revenue);
+                        
+                        
+                        $('#all_month_data').val(res.all_month_data);
+                        $('#placed').val(res.order_placed.monthly_data);
+                        $('#accepted').val(res.order_accepted.monthly_data);
+                        $('#rejected').val(res.order_rejected.monthly_data);
+                        $('#delivered').val(res.order_delivered.monthly_data);
+                        $('#ready').val(res.order_ready.monthly_data);
+                        $('#cancel').val(res.order_cancelled.monthly_data);
+                        $('#month_wise_revenue').val(res.month_wise_revenue);
+
+                        chart1();
+                        chart2();
+                        chart3();
+                        chart4();
+                        chart6();
+                        chart7();
+                        chart8();
+                        chart9();
                     } 
                 },error: function(error) {
                     console.log(error);
                 }
-        });
+            });
     }
-    $(function() {
-        $('input[name="datefilter"]').daterangepicker({
-            autoUpdateInput: false,
-            locale: {
-                cancelLabel: 'Clear',
-                format: 'DD-MM-YYYY'
-            }
+    
+    if(truck_count > 1){
+        var ajaxcall = ajaxCall(date_range, trucks_id);
+        $(function() {
+            $('input[name="datefilter"]').on('apply.daterangepicker', function(ev, picker) {
+                $(this).val(picker.startDate.format('DD-MM-YYYY') + ' | ' + picker.endDate.format('DD-MM-YYYY'));
+                var date_range =  $(this).val();
+                var trucks_id = $( "#trucks option:selected" ).val();
+                if(trucks_id == null || trucks_id ==''){
+                    $('#selectTruck').modal({
+                        backdrop: 'static'
+                    });
+                    $('#selectTruck').modal('show');
+                }else{
+                    var ajaxcall = ajaxCall(date_range, trucks_id);
+                }
+            });
+            $('input[name="datefilter"]').on('cancel.daterangepicker', function(ev, picker) {
+                $(this).val('');
+                var date_range =   $(this).val();
+                var trucks_id = $( "#trucks option:selected" ).val();
+                var ajaxcall = ajaxCall(date_range, trucks_id);
+            });
+
+            $('#trucks').on('change', function(){
+                var date_range = $('#datefilter').val();
+                var trucks_id = $("#trucks option:selected").val();
+                if(trucks_id != null && trucks_id != '') {
+                    var ajaxcall = ajaxCall(date_range, trucks_id);
+                }
+                if(trucks_id == '' && date_range == ''){
+                    var ajaxcall = ajaxCall(date_range, trucks_id);
+                }
+                if(trucks_id == '' && date_range != ''){
+                    $('#selectTruck').modal({
+                        backdrop: 'static'
+                    });
+                    var ajaxcall = ajaxCall('', trucks_id);
+                    $('#selectTruck').modal('show');
+                }
+            });
         });
+    }else{
         $('input[name="datefilter"]').on('apply.daterangepicker', function(ev, picker) {
             $(this).val(picker.startDate.format('DD-MM-YYYY') + ' | ' + picker.endDate.format('DD-MM-YYYY'));
             var date_range =  $(this).val();
             var trucks_id = $( "#trucks option:selected" ).val();
-            if(trucks_id == null || trucks_id ==''){
-                $('#selectTruck').modal({
-                    backdrop: 'static'
-                });
-                $('#selectTruck').modal('show');
-            }else{
+            if(date_range != '' && date_range != null){
                 var ajaxcall = ajaxCall(date_range, trucks_id);
             }
         });
@@ -465,35 +1034,9 @@ $(document).ready(function(){
             $(this).val('');
             var date_range =   $(this).val();
             var trucks_id = $( "#trucks option:selected" ).val();
-            var ajaxcall = ajaxCall(date_range, trucks_id);
+            var ajaxcall = ajaxCall(date_range, trucks_id, 'singel_truck');
         });
-
-        $('#trucks').on('change', function(){
-            var date_range = $('#datefilter').val();
-            var trucks_id = $("#trucks option:selected").val();
-            if(trucks_id != null && trucks_id != '') {
-                var ajaxcall = ajaxCall(date_range, trucks_id);
-            }
-            if(trucks_id == '' && date_range == ''){
-                var ajaxcall = ajaxCall(date_range, trucks_id);
-            }
-            if(trucks_id == '' && date_range != ''){
-                $('#selectTruck').modal({
-                    backdrop: 'static'
-                });
-                var ajaxcall = ajaxCall('', trucks_id);
-                $('#selectTruck').modal('show');
-            }
-        });
-
-        $('#datefilter').on('change', function(){
-            var date_range = $('#datefilter').val();
-            var trucks_id = $("#trucks option:selected").val();
-            if(trucks_id != '' && date_range == ''){
-                var ajaxcall = ajaxCall('', trucks_id);
-            }
-        });
-    });
+    }
 });
 </script>
 @endsection
