@@ -5,7 +5,7 @@ use App\Http\Controllers\Authentication\AuthController;
 use App\Http\Controllers\Merchant\DashboardController;
 use App\Http\Controllers\Merchant\TrucksController;
 use App\Http\Controllers\Merchant\TrucksSettingController;
-
+use App\Http\Controllers\ReportController;
 
 # 1. Authentications & Login
 Route::get('login', [AuthController::class, 'viewLogin'])->name('login');
@@ -33,3 +33,5 @@ Route::get('get-trucks-setting', [TrucksSettingController::class, 'getTrucksSett
 Route::post('edit-trucks-setting/{id}',  [TrucksSettingController::class, 'updateTrucksSetting'])->name('edit_trucks_setting');
 Route::post('delete-trucks-setting/{id}',  [TrucksSettingController::class, 'deleteTrucksSetting'])->name('delete_trucks_setting');
 
+# 3.  Export data
+Route::get('download-report', [ReportController::class, 'downloadReport'])->name('download_report');

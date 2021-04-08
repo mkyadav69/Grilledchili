@@ -199,10 +199,19 @@ table.dataTable {
                 @yield('selectTruck')
             </div>
         </div>
-        
 
-        
 
+        <div class="modal fade" id="selectDate" tabindex="-1" role="dialog" aria-labelledby="largeModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg" role="document">
+                @yield('selectDate')
+            </div>
+        </div>
+        
+        <div class="modal fade" id="selectTruckDate" tabindex="-1" role="dialog" aria-labelledby="largeModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg" role="document">
+                @yield('selectTruckDate')
+            </div>
+        </div>
         
     <!-- Vendor JS       -->
     <script src="{{asset('vendor/slick/slick.min.js')}}"></script>

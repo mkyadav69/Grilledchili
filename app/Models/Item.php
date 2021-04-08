@@ -13,4 +13,10 @@ class Item extends Model
         return $this->belongsTo(ItemOrder::class, 'item_id');
 
     }
+
+    public function order_item()
+    {
+        return $this->belongsTo(hasMany::class, 'item_id');
+
+    }
 }

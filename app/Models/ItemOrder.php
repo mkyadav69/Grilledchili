@@ -16,4 +16,8 @@ class ItemOrder extends Model
         return $this->belongsTo(Order::class);
 
     }
+    public function items()
+    {
+        return $this->belongsToMany(Item::class);
+    }
 }

@@ -32,6 +32,7 @@ class DashboardController extends Controller
             return $name['name'];
         }
     }
+    
     public function dashboard(){
         $trucks = Truck::query();
         # Monthy Reports
@@ -49,10 +50,14 @@ class DashboardController extends Controller
         ];
         $ratio = [];
         if($current_month_data > $last_month_data){
-            $ratio['increases_by'] = ($current_month_data-$last_month_data)/100;
+            $increases_by = $current_month_data-$last_month_data;
+            $percent =  ($increases_by/$current_month_data)*100;
+            $ratio['increases_by'] = number_format((float)$percent, 2, '.', '');
             $ratio['month'] =  $current_month_name;
         }else if($last_month_data > $current_month_data){
-            $ratio['decreases_by'] = ($last_month_data-$current_month_data)/100;
+            $decreases_by = $last_month_data-$current_month_data;
+            $percent =  ($decreases_by/$last_month_data)*100;
+            $ratio['decreases_by'] = number_format((float)$percent, 2, '.', '');
             $ratio['month'] =  'By Last '.$last_month_name;
         }
         // dd($current_month_data, $last_month_name);
@@ -99,9 +104,9 @@ class DashboardController extends Controller
             $response = [];
             $ui_date = null;
             # multiple truck
-            // $trucks  = $trucks->pluck('name', 'id')->toArray();
+            $trucks  = $trucks->pluck('name', 'id')->toArray();
             #Single truck
-            $trucks = ['1'=>'TEST TRUCK'];
+            // $trucks = ['1'=>'TEST TRUCK'];
 
             $check_truck_count  = count($trucks);
             if($check_truck_count == 1){
@@ -170,10 +175,9 @@ class DashboardController extends Controller
             $status_wise_data['monthly_data'] = json_encode($moth_data);
             $response[$column] = $status_wise_data;
         }
-        $total_order = count($orders->get());
         # Calcutae all trucks revenue and revenue by month wise
         $test = [];
-        $order_dataset = $orders->where('order_delivered', 1)->get()->groupBy(function($d) {
+        $order_dataset = $get_order->where('order_delivered', 1)->groupBy(function($d) {
             return Carbon::parse($d->created_at)->format('M');
         });
         $get_tempdata = [];
@@ -205,6 +209,7 @@ class DashboardController extends Controller
                 $all_month_data[$m] = 0;    
             }
         }
+        $total_order = count($get_order);
         $revenue = $orders->where('order_delivered', 1)->sum('total');
         $response['total_revenue'] = $revenue;
         $response['total_order'] = $total_order;

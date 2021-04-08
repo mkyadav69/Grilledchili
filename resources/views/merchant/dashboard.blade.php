@@ -8,6 +8,15 @@
     height: 600px;
     padding-left: 100px;
 }
+.chart-info{
+    margin-left: 107px;
+}
+::placeholder {
+  color: white;
+  opacity: 1; /* Firefox */
+}
+
+
 </style>
 <div class="row">
     @if (session()->has('customer_message'))
@@ -22,8 +31,8 @@
         <h3 class="title-5 m-b-35">Overview </h3>
         <div class="table-data__tool">
             <div class="row table-data__tool-right">
-                <div class="col col-6">
-                    <select name="trucks" id="trucks" required class="form-control" >
+                <div class="col col-4">
+                    <select name="trucks" id="trucks" required class="btn btn-lg btn-info btn-block" >
                         @if(!empty($trucks) && count($trucks) > 1)
                                 <option value="">Select Trucks</option>
                                 @foreach($trucks as $id=>$name)
@@ -49,13 +58,22 @@
                     @endif
                 </div>
                 
-                <div class="row col-6" id="reportrange">
+                <div class="row col-4" id="reportrange">
                     <div class="col-0">
-                        <i class="fa fa-calendar"></i>&nbsp;
+                        <i class="fa fa-calendar"></i>
                     </div>
                     <div class="col-11">
-                        <input type="text" name="datefilter" required id="datefilter" class="form-control" value="{{ $ui_date }}" placeholder="DD-MM-YYY" />
+                        <input type="text" name="datefilter" required id="datefilter" class="btn btn-lg btn-info btn-block" value="{{ $ui_date }}" placeholder="DD-MM-YYY" />
                     </div>
+                </div>
+
+                <div class="col col-4"  class="btn btn btn-primary">
+                    <select name="order_report" id="order_report" required class="btn btn-lg btn-info btn-block" >
+                        <option value=""> Download Report</option>
+                        <option value="order_overview">Order Overview</option>
+                        <option value="order_details">Order Details</option>
+                        <option value="order_processing_efficiency">Order Processing Efficiency</option>
+                    </select>
                 </div>
 
         </div>
@@ -235,12 +253,11 @@
             <div class="au-card-inner">
                 <h3 class="title-2">Monthly reports</h3>
                 <div class="chart-info">
-                   
                     <div class="col-xl-4">
                         <div class="chart-note-wrap">
                             <div class="chart-note mr-0 d-block">
                                 <span class="dot dot--blue"></span>
-                                <span>current month</span>
+                                <span>last month</span>
                             </div>
                         </div>
                     </div>
@@ -249,7 +266,7 @@
                         <div class="chart-note-wrap">
                             <div class="chart-note mr-0 d-block">
                                 <span class="dot dot--green"></span>
-                                <span>last month</span>
+                                <span>current month</span>
                             </div>
                         </div>
                     </div>
@@ -310,6 +327,40 @@
 <script>
 $(document).ready(function(){
     var truck_count = "{{$check_truck_count}}";
+    $('#order_report').on('change', function(){
+        var trucks_id = $("#trucks option:selected").val();
+        var date_range = $('#datefilter').val();
+        var report_type = $("#order_report option:selected").val();
+        if(report_type != ''){
+            if(trucks_id == '' && date_range == ''){
+                $('#selectTruckDate').modal('show');
+            }else if(trucks_id == ''){
+                $('#selectTruck').modal('show');
+            }else if(date_range == ''){
+                $('#selectDate').modal('show');
+            }
+            var route = "{{ route('download_report')}}";
+            if(trucks_id != '' && date_range != ''){
+                $.ajax({
+                    method: "GET",
+                    url: route,
+                    data: { 'truck_id' : trucks_id, 'date_range' : date_range, 'report_type' : report_type },
+                    xhrFields: {
+                        responseType: 'blob'
+                    },
+                    success: function(response) {
+                        var blob = new Blob([response]);
+                        var link = document.createElement('a');
+                        link.href = window.URL.createObjectURL(blob);
+                        link.download = "report1.xlsx";
+                        link.click();
+                    }
+                });
+            }else{
+                console.log("in else");
+            }
+        }
+    })
 
     $('#datefilter').on('change', function(){
         var date_range = $('#datefilter').val();
@@ -322,607 +373,7 @@ $(document).ready(function(){
             var ajaxcall = ajaxCall('', trucks_id, 'single_truck');
         }
     });
-    function chart1(){
-        //WidgetChart 1
-        var ctx = document.getElementById("widgetChart1");
-        var all_month_data = document.getElementById("all_month_data").value;
-        var decode= JSON.parse(all_month_data);
-        var month = Object.keys(decode);
-        var value = Object.values(decode);
-        if (ctx) {
-        ctx.height = 130;
-        var myChart = new Chart(ctx, {
-            type: 'line',
-            data: {
-            labels: month,
-            type: 'line',
-            datasets: [{
-                data: value,
-                label: 'Order',
-                backgroundColor: 'transparent',
-                borderColor: 'rgba(255,255,255,.55)',
-            },]
-            },
-            options: {
-
-            maintainAspectRatio: false,
-            legend: {
-                display: false
-            },
-            responsive: true,
-            tooltips: {
-                mode: 'index',
-                titleFontSize: 12,
-                titleFontColor: '#000',
-                bodyFontColor: '#000',
-                backgroundColor: '#fff',
-                titleFontFamily: 'Montserrat',
-                bodyFontFamily: 'Montserrat',
-                cornerRadius: 3,
-                intersect: false,
-            },
-            scales: {
-                xAxes: [{
-                gridLines: {
-                    color: 'transparent',
-                    zeroLineColor: 'transparent'
-                },
-                ticks: {
-                    fontSize: 2,
-                    fontColor: 'transparent'
-                }
-                }],
-                yAxes: [{
-                display: false,
-                ticks: {
-                    display: false,
-                }
-                }]
-            },
-            title: {
-                display: false,
-            },
-            elements: {
-                line: {
-                tension: 0.00001,
-                borderWidth: 1
-                },
-                point: {
-                radius: 4,
-                hitRadius: 10,
-                hoverRadius: 4
-                }
-            }
-            }
-        });
-        }
-    }
-
-    function chart2(){
-        //WidgetChart 2
-        var ctx = document.getElementById("widgetChart2");
-        var placed = document.getElementById("placed").value;
-        var decode= JSON.parse(placed);
-        var month = Object.keys(decode);
-        var value = Object.values(decode);
-        if (ctx) {
-        ctx.height = 130;
-        var myChart = new Chart(ctx, {
-            type: 'line',
-            data: {
-            labels: month,
-            type: 'line',
-            datasets: [{
-                data: value,
-                label: 'Placed order',
-                backgroundColor: 'transparent',
-                borderColor: 'rgba(255,255,255,.55)',
-            },]
-            },
-            options: {
-
-            maintainAspectRatio: false,
-            legend: {
-                display: false
-            },
-            responsive: true,
-            tooltips: {
-                mode: 'index',
-                titleFontSize: 12,
-                titleFontColor: '#000',
-                bodyFontColor: '#000',
-                backgroundColor: '#fff',
-                titleFontFamily: 'Montserrat',
-                bodyFontFamily: 'Montserrat',
-                cornerRadius: 3,
-                intersect: false,
-            },
-            scales: {
-                xAxes: [{
-                gridLines: {
-                    color: 'transparent',
-                    zeroLineColor: 'transparent'
-                },
-                ticks: {
-                    fontSize: 2,
-                    fontColor: 'transparent'
-                }
-                }],
-                yAxes: [{
-                display: false,
-                ticks: {
-                    display: false,
-                }
-                }]
-            },
-            title: {
-                display: false,
-            },
-            elements: {
-                line: {
-                tension: 0.00001,
-                borderWidth: 1
-                },
-                point: {
-                radius: 4,
-                hitRadius: 10,
-                hoverRadius: 4
-                }
-            }
-            }
-        });
-        }
-    }
-
-    function chart3(){
-        //WidgetChart 3
-        var ctx = document.getElementById("widgetChart3");
-        var accepted = document.getElementById("accepted").value;
-        var decode= JSON.parse(accepted);
-        var month = Object.keys(decode);
-        var value = Object.values(decode);
-        if (ctx) {
-        ctx.height = 130;
-        var myChart = new Chart(ctx, {
-            type: 'line',
-            data: {
-            labels: month,
-            type: 'line',
-            datasets: [{
-                data: value,
-                label: 'Accepted orders',
-                backgroundColor: 'transparent',
-                borderColor: 'rgba(255,255,255,.55)',
-            },]
-            },
-            options: {
-
-            maintainAspectRatio: false,
-            legend: {
-                display: false
-            },
-            responsive: true,
-            tooltips: {
-                mode: 'index',
-                titleFontSize: 12,
-                titleFontColor: '#000',
-                bodyFontColor: '#000',
-                backgroundColor: '#fff',
-                titleFontFamily: 'Montserrat',
-                bodyFontFamily: 'Montserrat',
-                cornerRadius: 3,
-                intersect: false,
-            },
-            scales: {
-                xAxes: [{
-                gridLines: {
-                    color: 'transparent',
-                    zeroLineColor: 'transparent'
-                },
-                ticks: {
-                    fontSize: 2,
-                    fontColor: 'transparent'
-                }
-                }],
-                yAxes: [{
-                display: false,
-                ticks: {
-                    display: false,
-                }
-                }]
-            },
-            title: {
-                display: false,
-            },
-            elements: {
-                line: {
-                tension: 0.00001,
-                borderWidth: 1
-                },
-                point: {
-                radius: 4,
-                hitRadius: 10,
-                hoverRadius: 4
-                }
-            }
-            }
-        });
-        }
-    }
-
-    function chart4(){
-        var ctx = document.getElementById("widgetChart4");
-        var rejected = document.getElementById("rejected").value;
-        var decode= JSON.parse(rejected);
-        var month = Object.keys(decode);
-        var value = Object.values(decode);
-        if (ctx) {
-        ctx.height = 130;
-        var myChart = new Chart(ctx, {
-            type: 'line',
-            data: {
-            labels: month,
-            type: 'line',
-            datasets: [{
-                data: value,
-                label: 'Rejected orders',
-                backgroundColor: 'transparent',
-                borderColor: 'rgba(255,255,255,.55)',
-            },]
-            },
-            options: {
-
-            maintainAspectRatio: false,
-            legend: {
-                display: false
-            },
-            responsive: true,
-            tooltips: {
-                mode: 'index',
-                titleFontSize: 12,
-                titleFontColor: '#000',
-                bodyFontColor: '#000',
-                backgroundColor: '#fff',
-                titleFontFamily: 'Montserrat',
-                bodyFontFamily: 'Montserrat',
-                cornerRadius: 3,
-                intersect: false,
-            },
-            scales: {
-                xAxes: [{
-                gridLines: {
-                    color: 'transparent',
-                    zeroLineColor: 'transparent'
-                },
-                ticks: {
-                    fontSize: 2,
-                    fontColor: 'transparent'
-                }
-                }],
-                yAxes: [{
-                display: false,
-                ticks: {
-                    display: false,
-                }
-                }]
-            },
-            title: {
-                display: false,
-            },
-            elements: {
-                line: {
-                borderWidth: 1
-                },
-                point: {
-                radius: 4,
-                hitRadius: 10,
-                hoverRadius: 4
-                }
-            }
-            }
-        });
-        }
-    }
-
-    function chart6(){
-       // WidgetChart 6
-        var ctx = document.getElementById("widgetChart6");
-        var delivered = document.getElementById("delivered").value;
-        var decode= JSON.parse(delivered);
-        var month = Object.keys(decode);
-        var value = Object.values(decode);
-        if (ctx) {
-        ctx.height = 130;
-        var myChart = new Chart(ctx, {
-            type: 'line',
-            data: {
-            labels: month,
-            type: 'line',
-            datasets: [{
-                data: value,
-                label: 'Delivered orders',
-                backgroundColor: 'transparent',
-                borderColor: 'rgba(255,255,255,.55)',
-            },]
-            },
-            options: {
-
-            maintainAspectRatio: false,
-            legend: {
-                display: false
-            },
-            responsive: true,
-            tooltips: {
-                mode: 'index',
-                titleFontSize: 12,
-                titleFontColor: '#000',
-                bodyFontColor: '#000',
-                backgroundColor: '#fff',
-                titleFontFamily: 'Montserrat',
-                bodyFontFamily: 'Montserrat',
-                cornerRadius: 3,
-                intersect: false,
-            },
-            scales: {
-                xAxes: [{
-                gridLines: {
-                    color: 'transparent',
-                    zeroLineColor: 'transparent'
-                },
-                ticks: {
-                    fontSize: 2,
-                    fontColor: 'transparent'
-                }
-                }],
-                yAxes: [{
-                display: false,
-                ticks: {
-                    display: false,
-                }
-                }]
-            },
-            title: {
-                display: false,
-            },
-            elements: {
-                line: {
-                borderWidth: 1
-                },
-                point: {
-                radius: 4,
-                hitRadius: 10,
-                hoverRadius: 4
-                }
-            }
-            }
-        });
-        }
-    }
-
-    function chart7(){
-        //WidgetChart 7
-        var ctx = document.getElementById("widgetChart7");
-        var ready = document.getElementById("ready").value;
-        var decode= JSON.parse(ready);
-        var month = Object.keys(decode);
-        var value = Object.values(decode);
-        if (ctx) {
-        ctx.height = 130;
-        var myChart = new Chart(ctx, {
-            type: 'line',
-            data: {
-            labels: month,
-            type: 'line',
-            datasets: [{
-                data: value,
-                label: 'Ready orders',
-                backgroundColor: 'transparent',
-                borderColor: 'rgba(255,255,255,.55)',
-            },]
-            },
-            options: {
-
-            maintainAspectRatio: false,
-            legend: {
-                display: false
-            },
-            responsive: true,
-            tooltips: {
-                mode: 'index',
-                titleFontSize: 12,
-                titleFontColor: '#000',
-                bodyFontColor: '#000',
-                backgroundColor: '#fff',
-                titleFontFamily: 'Montserrat',
-                bodyFontFamily: 'Montserrat',
-                cornerRadius: 3,
-                intersect: false,
-            },
-            scales: {
-                xAxes: [{
-                gridLines: {
-                    color: 'transparent',
-                    zeroLineColor: 'transparent'
-                },
-                ticks: {
-                    fontSize: 2,
-                    fontColor: 'transparent'
-                }
-                }],
-                yAxes: [{
-                display: false,
-                ticks: {
-                    display: false,
-                }
-                }]
-            },
-            title: {
-                display: false,
-            },
-            elements: {
-                line: {
-                borderWidth: 1
-                },
-                point: {
-                radius: 4,
-                hitRadius: 10,
-                hoverRadius: 4
-                }
-            }
-            }
-        });
-        }
-    }
-
-    function chart8(){
-        //WidgetChart 8
-        var ctx = document.getElementById("widgetChart8");
-        var cancel = document.getElementById("cancel").value;
-        var decode= JSON.parse(cancel);
-        var month = Object.keys(decode);
-        var value = Object.values(decode);
-        if (ctx) {
-            ctx.height = 130;
-            var myChart = new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: month,
-                type: 'line',
-                datasets: [{
-                data: value,
-                label: 'Cancel orders',
-                backgroundColor: 'transparent',
-                borderColor: 'rgba(255,255,255,.55)',
-                },]
-            },
-            options: {
-
-                maintainAspectRatio: false,
-                legend: {
-                display: false
-                },
-                responsive: true,
-                tooltips: {
-                mode: 'index',
-                titleFontSize: 12,
-                titleFontColor: '#000',
-                bodyFontColor: '#000',
-                backgroundColor: '#fff',
-                titleFontFamily: 'Montserrat',
-                bodyFontFamily: 'Montserrat',
-                cornerRadius: 3,
-                intersect: false,
-                },
-                scales: {
-                xAxes: [{
-                    gridLines: {
-                    color: 'transparent',
-                    zeroLineColor: 'transparent'
-                    },
-                    ticks: {
-                    fontSize: 2,
-                    fontColor: 'transparent'
-                    }
-                }],
-                yAxes: [{
-                    display: false,
-                    ticks: {
-                    display: false,
-                    }
-                }]
-                },
-                title: {
-                display: false,
-                },
-                elements: {
-                line: {
-                    borderWidth: 1
-                },
-                point: {
-                    radius: 4,
-                    hitRadius: 10,
-                    hoverRadius: 4
-                }
-                }
-            }
-            });
-        }
-    }
-
-    function chart9(){
-        //WidgetChart 9
-        var ctx = document.getElementById("widgetChart9");
-        var month_wise_revenue = document.getElementById("month_wise_revenue").value;
-        var decode= JSON.parse(month_wise_revenue);
-        var month = Object.keys(decode);
-        var value = Object.values(decode);
-        if (ctx) {
-            ctx.height = 130;
-            var myChart = new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: month,
-                type: 'line',
-                datasets: [{
-                data: value,
-                label: 'Truck revenue',
-                backgroundColor: 'transparent',
-                borderColor: 'rgba(255,255,255,.55)',
-                },]
-            },
-            options: {
-
-                maintainAspectRatio: false,
-                legend: {
-                display: false
-                },
-                responsive: true,
-                tooltips: {
-                mode: 'index',
-                titleFontSize: 12,
-                titleFontColor: '#000',
-                bodyFontColor: '#000',
-                backgroundColor: '#fff',
-                titleFontFamily: 'Montserrat',
-                bodyFontFamily: 'Montserrat',
-                cornerRadius: 3,
-                intersect: false,
-                },
-                scales: {
-                xAxes: [{
-                    gridLines: {
-                    color: 'transparent',
-                    zeroLineColor: 'transparent'
-                    },
-                    ticks: {
-                    fontSize: 2,
-                    fontColor: 'transparent'
-                    }
-                }],
-                yAxes: [{
-                    display: false,
-                    ticks: {
-                    display: false,
-                    }
-                }]
-                },
-                title: {
-                display: false,
-                },
-                elements: {
-                line: {
-                    borderWidth: 1
-                },
-                point: {
-                    radius: 4,
-                    hitRadius: 10,
-                    hoverRadius: 4
-                }
-                }
-            }
-            });
-        }
-    }
+    
     var date_range = $('#datefilter').val();
     var trucks_id = $( "#trucks option:selected" ).val();
     
@@ -964,7 +415,6 @@ $(document).ready(function(){
                         $('#ready').val(res.order_ready.monthly_data);
                         $('#cancel').val(res.order_cancelled.monthly_data);
                         $('#month_wise_revenue').val(res.month_wise_revenue);
-
                         chart1();
                         chart2();
                         chart3();
@@ -973,6 +423,7 @@ $(document).ready(function(){
                         chart7();
                         chart8();
                         chart9();
+                        chart10()
                     } 
                 },error: function(error) {
                     console.log(error);
@@ -1042,7 +493,7 @@ $(document).ready(function(){
 @endsection
 
 @section('selectTruck')
-<!-- Delete-->
+<!-- selectTruck-->
     <div class="modal-content">
         <div class="modal-header">
             <h5 class="modal-title" id="largeModalLabel">Warning</h5>
@@ -1060,5 +511,51 @@ $(document).ready(function(){
             </div>
         </form>
     </div>
-<!-- end modal large -->
+<!-- end modal selectTruck -->
 @endsection
+
+
+@section('selectDate')
+<!-- selectDate-->
+    <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title" id="largeModalLabel">Warning</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <form method="post" id="deleteForm">
+            @csrf
+            <div class="modal-body">
+                <p>Please select the date </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </form>
+    </div>
+<!-- end modal selectDate -->
+@endsection
+
+@section('selectTruckDate')
+<!-- selectDate-->
+    <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title" id="largeModalLabel">Warning</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <form method="post" id="deleteForm">
+            @csrf
+            <div class="modal-body">
+                <p>Please select truck & date </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </form>
+    </div>
+<!-- end modal selectDate -->
+@endsection
+
