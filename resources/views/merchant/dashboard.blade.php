@@ -15,8 +15,12 @@
   color: white;
   opacity: 1; /* Firefox */
 }
-
-
+.daterangepicker select.yearselect {
+    width: 47%;
+}
+.chart-percent-card .chart-note {
+    margin-bottom: -20px;
+}
 </style>
 <div class="row">
     @if (session()->has('customer_message'))
@@ -379,6 +383,9 @@ $(document).ready(function(){
     
     $('input[name="datefilter"]').daterangepicker({
         autoUpdateInput: false,
+        linkedCalendars: false,
+        minYear: 2000,
+        showDropdowns: true,
         locale: {
             cancelLabel: 'Clear',
             format: 'DD-MM-YYYY'

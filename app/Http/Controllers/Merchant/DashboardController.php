@@ -36,8 +36,8 @@ class DashboardController extends Controller
     public function dashboard(){
         $trucks = Truck::query();
         # Monthy Reports
-        $last_month_data = Order::whereYear('created_at', Carbon::now()->year)->whereMonth('created_at', '=', Carbon::now()->subMonth()->month)->where('order_delivered', 1)->sum('total');
-        $current_month_data = Order::whereYear('created_at', Carbon::now()->year)->whereMonth('created_at', '=', Carbon::now()->month)->where('order_delivered', 1)->sum('total');
+        $last_month_data = Order::whereMonth('created_at', '=', Carbon::now()->subMonth()->month)->where('order_delivered', 1)->sum('total');
+        $current_month_data = Order::whereMonth('created_at', '=', Carbon::now()->month)->where('order_delivered', 1)->sum('total');
         $last_month_name = Carbon::now()->subMonth()->format('F');
         $current_month_name = Carbon::now()->format('F');
         $data = [
@@ -60,11 +60,11 @@ class DashboardController extends Controller
             $ratio['decreases_by'] = number_format((float)$percent, 2, '.', '');
             $ratio['month'] =  'By Last '.$last_month_name;
         }
-        // dd($current_month_data, $last_month_name);
         $report = json_encode($data);
+
         # Sale Report
         $item_array =[];
-        $items = Order::with('orderItem')->whereYear('created_at', Carbon::now()->year)->whereMonth('created_at', '=', Carbon::now()->subMonth()->month)->get();
+        $items = Order::with('orderItem')->whereMonth('created_at', '=', Carbon::now()->subMonth()->month)->get();
         if(!empty($items)){
             foreach($items as $item){
                 $order_items = $item->orderItem;
@@ -133,7 +133,7 @@ class DashboardController extends Controller
         $month = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
         $response = [];
 
-        $orders = Order::whereYear('created_at', Carbon::now()->year);
+        $orders = Order::query();
         $columns = ['order_placed', 'order_accepted', 'order_ready', 'order_cancelled', 'order_delivered', 'order_rejected'];
         if(!empty($data['date_range'])){
             $sep_date = explode("|", $data['date_range']);

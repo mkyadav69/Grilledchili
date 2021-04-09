@@ -124,10 +124,11 @@ table.dataTable {
                 <div class="section__content section__content--p30">
                     <div class="container-fluid">
                         @yield('content')
-                        <div class="row">
+                       
+                    </div>
+                    <div class="row">
                         @include('theme.layout.footer')
                         </div>
-                    </div>
                 </div>
             </div>
             <!-- END MAIN CONTENT-->
