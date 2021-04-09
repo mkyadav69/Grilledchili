@@ -12,12 +12,12 @@ class ItemOrder extends Model
     protected $table="item_order";
     use HasFactory;
 
-    public function order(){
-        return $this->belongsTo(Order::class);
-
+    public function item(){
+        return $this->belongsTo(Item::class);
     }
-    public function items()
+
+    public function order()
     {
-        return $this->belongsToMany(Item::class);
+        return $this->belongsTo(Order::class);
     }
 }

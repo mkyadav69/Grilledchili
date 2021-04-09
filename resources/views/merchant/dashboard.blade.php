@@ -135,7 +135,7 @@
             <div class="overview__inner">
                 <div class="overview-box clearfix">
                     <div class="icon">
-                        <i class="zmdi zmdi-shopping-cart"></i>
+                        <i class="fa fa-gift"></i>
                     </div>
                     <div class="text">
                         <h2 class="accepted_order">{{!empty($response['order_accepted']) ? $response['order_accepted'] : 0}}</h2>
@@ -155,7 +155,7 @@
             <div class="overview__inner">
                 <div class="overview-box clearfix">
                     <div class="icon">
-                        <i class="zmdi zmdi-shopping-cart"></i>
+                        <i class="fa fa-ban"></i>
                     </div>
                     <div class="text">
                         <h2 class="rejected_order">{{!empty($response['order_rejected']) ? $response['order_rejected'] : 0}}</h2>
@@ -176,7 +176,7 @@
             <div class="overview__inner">
                 <div class="overview-box clearfix">
                     <div class="icon">
-                        <i class="zmdi zmdi-shopping-cart"></i>
+                        <i class="fa fa-usd"></i>
                     </div>
                     <div class="text">
                     <h2 class="total_revenue">{{!empty($response['total_revenue']) ? $response['total_revenue'] : 0}}</h2>
@@ -197,7 +197,7 @@
             <div class="overview__inner">
                 <div class="overview-box clearfix">
                     <div class="icon">
-                        <i class="zmdi zmdi-shopping-cart"></i>
+                        <i class="fa fa-truck"></i>
                     </div>
                     <div class="text">
                         <h2 class="delivered_order">{{!empty($response['order_delivered']) ? $response['order_delivered'] : 0}}</h2>
@@ -217,7 +217,7 @@
             <div class="overview__inner">
                 <div class="overview-box clearfix">
                     <div class="icon">
-                        <i class="zmdi zmdi-shopping-cart"></i>
+                        <i class="fa fa-box"></i>
                     </div>
                     <div class="text">
                         <h2 class="ready_order">{{!empty($response['order_ready']) ? $response['order_ready'] : 0}}</h2>
@@ -236,7 +236,7 @@
             <div class="overview__inner">
                 <div class="overview-box clearfix">
                     <div class="icon">
-                        <i class="zmdi zmdi-shopping-cart"></i>
+                        <i class="fa fa-window-close"></i>
                     </div>
                     <div class="text">
                         <h2 class="cancel_order">{{!empty($response['order_cancelled']) ? $response['order_cancelled'] : 0}}</h2>

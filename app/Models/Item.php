@@ -8,15 +8,9 @@ use App\Models\ItemOrder;
 class Item extends Model
 {
     use HasFactory;
-    public function itemData()
-    {
-        return $this->belongsTo(ItemOrder::class, 'item_id');
-
-    }
-
     public function order_item()
     {
-        return $this->belongsTo(hasMany::class, 'item_id');
+        return $this->hasMany(ItemOrder::class);
 
     }
 }

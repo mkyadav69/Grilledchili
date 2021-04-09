@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\ItemOrder;
 use App\Models\Item;
+use App\Models\Customer;
 class Order extends Model
 {   
     use HasFactory;
@@ -14,9 +15,13 @@ class Order extends Model
         return $this->hasMany(ItemOrder::class);
     }
 
-    public function test()
+    public function customer()
     {
-        return $this->orderItem->hasMany(Item::class);
+        return $this->belongsTo(Customer::class);
     }
 
+    public function b()
+    {
+        return $this->hasMany(ItemOrder::class);
+    }
 }
