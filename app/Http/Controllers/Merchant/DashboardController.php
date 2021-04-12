@@ -25,53 +25,69 @@ class DashboardController extends Controller
         return $this->random_color_part() . $this->random_color_part() . $this->random_color_part();
     }
 
-    public function getName($id){
-        $name = Item::where('id', $id)->first();
-        if(!empty($name)){
-            $name = $name->toArray();
-            return $name['name'];
-        }
-    }
-    
     public function dashboard(){
         $trucks = Truck::query();
-        # Monthy Reports
-        $last_month_data = Order::whereMonth('created_at', '=', Carbon::now()->subMonth()->month)->where('order_delivered', 1)->sum('total');
-        $current_month_data = Order::whereMonth('created_at', '=', Carbon::now()->month)->where('order_delivered', 1)->sum('total');
-        $last_month_name = Carbon::now()->subMonth()->format('F');
-        $current_month_name = Carbon::now()->format('F');
+        # Last Month Reports
+        $last_month_data = Order::select(array(
+            \DB::raw('DATE(`created_at`) as `date`'),
+            \DB::raw('COUNT(*) as `count`')
+            ))->whereYear('created_at', Carbon::now()->year)->whereMonth('created_at', '=', Carbon::now()->subMonth()->month)
+            ->groupBy('date')
+            ->orderBy('date', 'asc')
+            ->get('count', 'date');
+
+        if(!empty($last_month_data)){
+            $last_date_labels =  $last_month_data->pluck('date')->toArray();
+            $last_date_count =  $last_month_data->pluck('count')->toArray();
+            $last_month_total = array_sum($last_date_count);
+        }
+
+        # Current Month Data
+        $current_month_data = Order::select(array(
+            \DB::raw('DATE(`created_at`) as `date`'),
+            \DB::raw('COUNT(*) as `count`')
+            ))->whereYear('created_at', Carbon::now()->year)->whereMonth('created_at', '=', Carbon::now()->month)
+            ->groupBy('date')
+            ->orderBy('date', 'ASC');
+
+        if(!empty($current_month_data)){
+            $current_date_labels =  $current_month_data->pluck('date')->toArray();
+            $current_date_count =  $current_month_data->pluck('count')->toArray();
+            $current_month_total = array_sum($current_date_count);
+        }
+
         $data = [
             'data' =>[
-                'data1'=>[$current_month_data, $current_month_data],
-                'data2'=> [$last_month_data, $last_month_data]
+                'data1'=>[$current_date_count],
+                'data2'=> [$last_date_count]
             ], 
-            'labels'=>[$last_month_name, $current_month_name],
-            'total_amount'=>$current_month_data+$last_month_data,
+            'labels'=>[$current_date_labels, $last_date_labels],
+            'total_amount'=>$last_month_total+$current_month_total,
         ];
         $ratio = [];
-        if($current_month_data > $last_month_data){
-            $increases_by = $current_month_data-$last_month_data;
-            $percent =  ($increases_by/$current_month_data)*100;
+        if($current_month_total > $last_month_total){
+            $increases_by = $current_month_total-$last_month_total;
+            $percent =  ($increases_by/$current_month_total)*100;
             $ratio['increases_by'] = number_format((float)$percent, 2, '.', '');
-            $ratio['month'] =  $current_month_name;
-        }else if($last_month_data > $current_month_data){
-            $decreases_by = $last_month_data-$current_month_data;
-            $percent =  ($decreases_by/$last_month_data)*100;
+            $ratio['month'] =  Carbon::now()->format('F');
+        }else if($last_month_total > $current_month_total){
+            $decreases_by = $last_month_total-$current_month_total;
+            $percent =  ($decreases_by/$last_month_total)*100;
             $ratio['decreases_by'] = number_format((float)$percent, 2, '.', '');
-            $ratio['month'] =  'By Last '.$last_month_name;
+            $ratio['month'] =  'By Last '.Carbon::now()->subMonth()->format('F');
         }
         $report = json_encode($data);
 
         # Sale Report
         $item_array =[];
-        $items = Order::with('orderItem')->whereMonth('created_at', '=', Carbon::now()->subMonth()->month)->get();
+        $items = Order::with('orderItem')->whereMonth('created_at', '=', Carbon::now()->subMonth()->month)->where('order_delivered', 1)->get();
         if(!empty($items)){
             foreach($items as $item){
                 $order_items = $item->orderItem;
                 foreach($order_items as $m){
-                    $name = $this->getName($m->item_id);
-                    if(!empty($name)){
-                        $item_array[] = $name;
+                    $item_name = $m->item;
+                    if(!empty($item_name)){
+                        $item_array[] = $item_name->name;
                     }
                 }
             }
@@ -85,12 +101,11 @@ class DashboardController extends Controller
         if(!empty($item_count)){
             foreach($item_count as $item_name=>$item_value){
                 $get_color = $this->random_color();
-                $item[$item_name.'_'.$get_color] = round(($item_value/$total_count) * 100, 2);
+                $item[$item_name.'_'.$get_color] = round(($item_value/$total_count) * 100, 2).' %';
                 $graph[$item_name] = round(($item_value/$total_count) * 100, 2);
                 $color[] = '#'.$get_color;
             }
         }
-        
         $sale['data'] = array_values($item);
         $sale['labels'] = array_keys($item);
         $sale['colors'] = $color;

@@ -600,54 +600,6 @@ function chart9(){
   }
 }
 
-function chart10(){
-   //WidgetChart 10
-
-  var d = document.getElementById("report").value;
-  var decode= JSON.parse(d);
-
-  var data1 = decode.data.data1;
-  var data2 = decode.data.data2;
-  var labels = decode.labels;
-  
-  var total_amount = decode.total_amount;
-  var ctx = document.getElementById("widgetChart10");
-  if (ctx) {
-  ctx.height = 220;
-  var myChart = new Chart(ctx, {
-      type: 'bar',
-      data: {
-      labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
-      datasets: [
-          {
-          label: "My First dataset",
-          data: [78, 81, 80, 64, 65, 80, 70, 75, 67, 85, 66, 68],
-          borderColor: "transparent",
-          borderWidth: "0",
-          backgroundColor: "#ccc",
-          }
-      ]
-      },
-      options: {
-      maintainAspectRatio: true,
-      legend: {
-          display: false
-      },
-      scales: {
-          xAxes: [{
-          display: false,
-          categoryPercentage: 1,
-          barPercentage: 0.65
-          }],
-          yAxes: [{
-          display: false
-          }]
-      }
-      }
-  });
-  }
-}
-
 
 
 (function ($) {
@@ -655,50 +607,40 @@ function chart10(){
   "use strict";
 
   try {
-    
-    // Recent Report
+    /// Recent Report
     const brandProduct = 'rgba(0,181,233,0.8)'
     const brandService = 'rgba(0,173,95,0.8)'
 
-    var elements = 10
+    var elements = 12
+
     var d = document.getElementById("report").value;
     var decode= JSON.parse(d);
-  
-    var data1 = decode.data.data1;
-    var data2 = decode.data.data2;
+    var data = decode.data;
     var labels = decode.labels;
-    
-    var total_amount = decode.total_amount;
     var ctx = document.getElementById("recent-rep-chart");
-    if (total_amount > 5 ){
-      var steps_size  = (total_amount / 4);
-    }else{
-      var steps_size  =  total_amount;
-    }
     if (ctx) {
-      ctx.height = 250;
+      ctx.height = 350;
       var myChart = new Chart(ctx, {
-        type: 'bar',
+        type: 'line',
         data: {
-          labels: [],
+          labels: [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31],
           datasets: [
             {
-              label: labels[0],
-              backgroundColor: brandProduct,
-              borderColor: 'transparent',
-              pointHoverBackgroundColor: '#fff',
-              borderWidth: 0,
-              data: data2
-
-            },
-            {
-              label: labels[1],
-              
+              label: 'Total Order',
               backgroundColor: brandService,
               borderColor: 'transparent',
               pointHoverBackgroundColor: '#fff',
               borderWidth: 0,
-              data: data1
+              data: data.data1[0]
+
+            },
+            {
+              label: 'Toral Order',
+              backgroundColor: brandProduct,
+              borderColor: 'transparent',
+              pointHoverBackgroundColor: '#fff',
+              borderWidth: 0,
+              data: data.data2[0]
 
             }
           ]
@@ -723,9 +665,9 @@ function chart10(){
             yAxes: [{
               ticks: {
                 beginAtZero: true,
-                maxTicksLimit: 5,
-                stepSize: steps_size,
-                max: total_amount,
+                maxTicksLimit: 12,
+                stepSize: 15,
+                max: 225,
                 fontFamily: "Poppins",
                 fontSize: 12
               },
@@ -770,15 +712,13 @@ function chart10(){
               data: data,
               backgroundColor: colors,
               hoverBackgroundColor: [
-                '#00b5e9',
-                '#fa4251'
+                
               ],
               borderWidth: [
                 0, 0
               ],
               hoverBorderColor: [
-                'transparent',
-                'transparent',
+                
               ]
             }
           ],
@@ -812,103 +752,6 @@ function chart10(){
   }
 
 
-  try {
-    //Sales chart
-    var ctx = document.getElementById("sales-chart");
-    if (ctx) {
-      ctx.height = 150;
-      var myChart = new Chart(ctx, {
-        type: 'line',
-        data: {
-          labels: ["2010", "2011", "2012", "2013", "2014", "2015", "2016"],
-          type: 'line',
-          defaultFontFamily: 'Poppins',
-          datasets: [{
-            label: "Foods",
-            data: [0, 30, 10, 120, 50, 63, 10],
-            backgroundColor: 'transparent',
-            borderColor: 'rgba(220,53,69,0.75)',
-            borderWidth: 3,
-            pointStyle: 'circle',
-            pointRadius: 5,
-            pointBorderColor: 'transparent',
-            pointBackgroundColor: 'rgba(220,53,69,0.75)',
-          }, {
-            label: "Electronics",
-            data: [0, 50, 40, 80, 40, 79, 120],
-            backgroundColor: 'transparent',
-            borderColor: 'rgba(40,167,69,0.75)',
-            borderWidth: 3,
-            pointStyle: 'circle',
-            pointRadius: 5,
-            pointBorderColor: 'transparent',
-            pointBackgroundColor: 'rgba(40,167,69,0.75)',
-          }]
-        },
-        options: {
-          responsive: true,
-          tooltips: {
-            mode: 'index',
-            titleFontSize: 12,
-            titleFontColor: '#000',
-            bodyFontColor: '#000',
-            backgroundColor: '#fff',
-            titleFontFamily: 'Poppins',
-            bodyFontFamily: 'Poppins',
-            cornerRadius: 3,
-            intersect: false,
-          },
-          legend: {
-            display: false,
-            labels: {
-              usePointStyle: true,
-              fontFamily: 'Poppins',
-            },
-          },
-          scales: {
-            xAxes: [{
-              display: true,
-              gridLines: {
-                display: false,
-                drawBorder: false
-              },
-              scaleLabel: {
-                display: false,
-                labelString: 'Month'
-              },
-              ticks: {
-                fontFamily: "Poppins"
-              }
-            }],
-            yAxes: [{
-              display: true,
-              gridLines: {
-                display: false,
-                drawBorder: false
-              },
-              scaleLabel: {
-                display: true,
-                labelString: 'Value',
-                fontFamily: "Poppins"
-
-              },
-              ticks: {
-                fontFamily: "Poppins"
-              }
-            }]
-          },
-          title: {
-            display: false,
-            text: 'Normal Legend'
-          }
-        }
-      });
-    }
-
-
-  } catch (error) {
-    console.log(error);
-  }
 
 })(jQuery);
 

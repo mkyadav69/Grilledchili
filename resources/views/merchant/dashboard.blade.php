@@ -277,6 +277,7 @@
                                 <span class="label">{{ $ratio['month']}} </span>
                             </div>
                         @endif
+
                         @if(!empty($ratio['decreases_by']))
                             <div class="chart-statis mr-0">
                                 <span class="index decre">
@@ -288,6 +289,7 @@
                 </div>
                 <div class="recent-report__chart">
                     <canvas id="recent-rep-chart"></canvas>
+                    <p>Days</p>
                 </div>
                 <input type="hidden" value="{{$report}}" name="report", id="report">
             </div>
@@ -338,7 +340,7 @@ $(document).ready(function(){
             $.ajax({
                 method: "GET",
                 url: route,
-                data: { 'truck_id' : trucks_id, 'date_range' : date_range, 'report_type' : report_type },
+                data: { 'truck_id' : trucks_id, 'date_range' : date_range, 'report_type' : report_type, 'truck_count':  truck_count},
                 xhrFields: {
                     responseType: 'blob'
                 },
@@ -419,7 +421,6 @@ $(document).ready(function(){
                         chart7();
                         chart8();
                         chart9();
-                        chart10()
                     } 
                 },error: function(error) {
                     console.log(error);
