@@ -25,10 +25,10 @@ class OrderOverviewReportSheet implements FromCollection, ShouldAutoSize, WithHe
 
     public function collection(){ 
         $query =  Order::with('customer');
-        if($this->data['truck_id']){
+        if(isset($this->data['truck_id']) && !empty($this->data['truck_id'])){
             $query->where('truck_id', $this->data['truck_id']);
         }
-        if($this->data['from_date'] && $this->data['to_date']){
+        if(isset($this->data['from_date']) && !empty($this->data['to_date'])){
             $query->whereBetween('created_at', [$this->data['from_date'], $this->data['to_date']]);
         }
         $query_data = $query->where('order_placed', 1)->orderBy('id', 'asc')->get();
@@ -67,16 +67,16 @@ class OrderOverviewReportSheet implements FromCollection, ShouldAutoSize, WithHe
     }
 
     public function styles(Worksheet $sheet){
+        $sheet->getStyle("D")->getNumberFormat()->setFormatCode('0.00'); 
+        $sheet->getStyle("E")->getNumberFormat()->setFormatCode('0.00'); 
+        $sheet->getStyle("F")->getNumberFormat()->setFormatCode('0.00'); 
+        $sheet->getStyle("G")->getNumberFormat()->setFormatCode('0.00'); 
         return [
             1    => ['font' => ['bold' => true]],
         ];
     }
 
-    /**
-     * @return string
-     */
-    public function title(): string
-    {
+    public function title(): string{
         return 'Order Overview';
     }
 }

@@ -26,10 +26,10 @@ class OrderProcessingEfficiencyReportSheet implements FromCollection, ShouldAuto
 
     public function collection(){ 
         $query =  Order::with('customer');
-        if($this->data['truck_id']){
+        if(isset($this->data['truck_id']) && !empty($this->data['truck_id'])){
             $query->where('truck_id', $this->data['truck_id']);
         }
-        if($this->data['from_date'] && $this->data['to_date']){
+        if(isset($this->data['from_date']) && !empty($this->data['to_date'])){
             $query->whereBetween('created_at', [$this->data['from_date'], $this->data['to_date']]);
         }
         $query_data = $query->where('order_placed', 1)->orderBy('id', 'asc')->get();
@@ -49,7 +49,7 @@ class OrderProcessingEfficiencyReportSheet implements FromCollection, ShouldAuto
                 $temp_data['order_pickup_interval'] = $order['order_pickup_interval'];
                 $temp_data['order_rejected_time'] = $order['order_rejected_time'];
                 $temp_data['order_rejected_interval'] = $order['order_rejected_interval'];
-                $temp_data['order_cancel_interval'] = 'NA';
+                $temp_data['order_cancel_interval'] = Date( "i:s",strtotime($order['order_cancelled_time']) - strtotime($order['order_accepted_time']));
                 $final_records[] = $temp_data;
             }
             return collect($final_records);
@@ -82,11 +82,7 @@ class OrderProcessingEfficiencyReportSheet implements FromCollection, ShouldAuto
         ];
     }
 
-     /**
-     * @return string
-     */
-    public function title(): string
-    {
+    public function title(): string{
         return 'Order Processing Efficiency';
     }
 

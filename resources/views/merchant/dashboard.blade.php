@@ -71,13 +71,8 @@
                     </div>
                 </div>
 
-                <div class="col col-4"  class="btn btn btn-primary">
-                    <select name="order_report" id="order_report" required class="btn btn-lg btn-info btn-block" >
-                        <option value=""> Download Report</option>
-                        <option value="order_overview">Order Overview</option>
-                        <option value="order_details">Order Details</option>
-                        <option value="order_processing_efficiency">Order Processing Efficiency</option>
-                    </select>
+                <div class="col col-4">
+                    <button class="btn btn-lg btn-success btn-block report">Download Report</button>
                 </div>
 
         </div>
@@ -331,38 +326,32 @@
 <script>
 $(document).ready(function(){
     var truck_count = "{{$check_truck_count}}";
-    $('#order_report').on('change', function(){
+    $('.report').on('click', function(){
         var trucks_id = $("#trucks option:selected").val();
         var date_range = $('#datefilter').val();
         var report_type = $("#order_report option:selected").val();
-        if(report_type != ''){
-            if(trucks_id == '' && date_range == ''){
-                $('#selectTruckDate').modal('show');
-            }else if(trucks_id == ''){
-                $('#selectTruck').modal('show');
-            }else if(date_range == ''){
-                $('#selectDate').modal('show');
-            }
-            var route = "{{ route('download_report')}}";
-            if(trucks_id != '' && date_range != ''){
-                $.ajax({
-                    method: "GET",
-                    url: route,
-                    data: { 'truck_id' : trucks_id, 'date_range' : date_range, 'report_type' : report_type },
-                    xhrFields: {
-                        responseType: 'blob'
-                    },
-                    success: function(response) {
-                        var blob = new Blob([response]);
-                        var link = document.createElement('a');
-                        link.href = window.URL.createObjectURL(blob);
-                        link.download = "report1.xlsx";
-                        link.click();
-                    }
-                });
-            }else{
-                console.log("in else");
-            }
+        if(trucks_id == '' && date_range == ''){
+            $('#selectTruckDate').modal('show');
+        }
+        var route = "{{ route('download_report')}}";
+        if(trucks_id != ''|| date_range != ''){
+            $.ajax({
+                method: "GET",
+                url: route,
+                data: { 'truck_id' : trucks_id, 'date_range' : date_range, 'report_type' : report_type },
+                xhrFields: {
+                    responseType: 'blob'
+                },
+                success: function(response) {
+                    var blob = new Blob([response]);
+                    var link = document.createElement('a');
+                    link.href = window.URL.createObjectURL(blob);
+                    link.download = "report1.xlsx";
+                    link.click();
+                }
+            });
+        }else{
+            console.log("in else");
         }
     })
 
@@ -499,51 +488,6 @@ $(document).ready(function(){
 </script>
 @endsection
 
-@section('selectTruck')
-<!-- selectTruck-->
-    <div class="modal-content">
-        <div class="modal-header">
-            <h5 class="modal-title" id="largeModalLabel">Warning</h5>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-            </button>
-        </div>
-        <form method="post" id="deleteForm">
-            @csrf
-            <div class="modal-body">
-                <p>Please select the truck </p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-            </div>
-        </form>
-    </div>
-<!-- end modal selectTruck -->
-@endsection
-
-
-@section('selectDate')
-<!-- selectDate-->
-    <div class="modal-content">
-        <div class="modal-header">
-            <h5 class="modal-title" id="largeModalLabel">Warning</h5>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-            </button>
-        </div>
-        <form method="post" id="deleteForm">
-            @csrf
-            <div class="modal-body">
-                <p>Please select the date </p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-            </div>
-        </form>
-    </div>
-<!-- end modal selectDate -->
-@endsection
-
 @section('selectTruckDate')
 <!-- selectDate-->
     <div class="modal-content">
@@ -556,7 +500,7 @@ $(document).ready(function(){
         <form method="post" id="deleteForm">
             @csrf
             <div class="modal-body">
-                <p>Please select truck & date </p>
+                <p>Please select either truck or date </p>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
