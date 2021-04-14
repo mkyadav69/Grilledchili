@@ -7,85 +7,48 @@
         color: red;
         padding-left: 5px;
     }
+
+    .au-input {
+        border-radius : 20px;
+        border-color: skyblue;
+    }
+    .btn-block{
+        border-radius : 20px;
+    }
+    .login-content {
+        border-radius: 20px;
+    }
 </style>
+@if ($message = Session::get('success'))
+    <div class="alert alert-success alert-block">
+        <button type="button" class="close" data-dismiss="alert">×</button>	
+        <strong>{{ $message }}</strong>
+    </div>
+@endif
+
+@if ($message = Session::get('error'))
+    <div class="alert alert-error alert-block">
+        <button type="button" class="close" data-dismiss="alert">×</button>	
+        <strong>{{ $message }}</strong>
+    </div>
+@endif
 <div class="login-form">
-    @if (session()->has('message'))
-        <div class="sufee-alert alert with-close alert-success alert-dismissible fade show">
-            {{ session('message') }}
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-            </button>
-        </div>
-    @endif
-    @if ($errors->has('message'))
-        <div class="sufee-alert alert with-close alert-danger alert-dismissible fade show">
-            <span class="badge badge-pill badge-danger">Error</span>
-            {{ $errors->first('message') }}
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-            </button>
-        </div>
-    @endif
-    <form action="{{ route('get_login')}}" method="post">
+    <form action="{{route('get_login')}}" method="post">
         @csrf
         <div class="form-group">
-            <label class="required">Email Address</label>
-            <input class="au-input au-input--full" required type="email" name="email" placeholder="Email">
+            <input class="au-input au-input--full form-control" type="text" name="mobile" maxlength="10" pattern="\d{10}" title="Please enter exactly 10 digits" placeholder="Account Mobile No" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');">
         </div>
-        @if ($errors->has('email'))
-            <div class="sufee-alert alert with-close alert-danger alert-dismissible fade show">
-                <span class="badge badge-pill badge-danger">Error</span>
-                {{ $errors->first('email') }}
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-        @endif
-        
-        <div class="form-group">
-            <label class="required">Password</label>
-            <input class="au-input au-input--full" type="password" required name="password" placeholder="Password">
-        </div>
-        @if ($errors->has('password'))
-            <div class="sufee-alert alert with-close alert-danger alert-dismissible fade show">
-                <span class="badge badge-pill badge-danger">Error</span>
-                {{ $errors->first('password') }}
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-        @endif
-
-        <div class="form-group">
-            <label class="required">OPT</label>
-            <input type="button"class="btn btn-primary" title="Get OTP"type="password" required name="password" placeholder="Password">
-        </div>
-        @if ($errors->has('password'))
-            <div class="sufee-alert alert with-close alert-danger alert-dismissible fade show">
-                <span class="badge badge-pill badge-danger">Error</span>
-                {{ $errors->first('password') }}
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-        @endif
-
-        <div class="login-checkbox">
-            <label>
-                <input type="checkbox" name="remember">Remember Me
-            </label>
-            <label>
-                <a href="#">Forgotten Password?</a>
-            </label>
-        </div>
-        <button class="au-btn au-btn--block au-btn--green m-b-20" >sign in</button>
-       
+        <button class="btn btn-lg btn-info btn-block" type="submit">Sign In</button>
     </form>
-    <div class="register-link">
-        <p>
-        © GrilledChili All rights reserved
-           
-        </p>
+    <div class="form-group  register-link">
+        <div>
+            <label>Don't have an account ? </lable>
+        </div>
+        <div>
+            <a href="{{route('register')}}">
+                Create new account
+            </a>
+        </div>
     </div>
 </div>
 @endsection

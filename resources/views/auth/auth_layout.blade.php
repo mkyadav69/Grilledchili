@@ -44,15 +44,14 @@
                     <div class="login-content">
                         <div class="login-logo">
                             <a href="#">
-                                <img src="{{asset('images/icon/cropped-web_logo_small-1.png')}}" alt="CoolAdmin">
+                                <img src="{{asset('images/icon/cropped-web_logo_small-1.png')}}" alt="brocken image">
                             </a>
                         </div>
-                       @yield('content')
+                        @yield('content')
                     </div>
                 </div>
             </div>
         </div>
-
     </div>
 
     <!-- Jquery JS-->

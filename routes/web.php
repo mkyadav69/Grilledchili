@@ -7,9 +7,15 @@ use App\Http\Controllers\Merchant\TrucksController;
 use App\Http\Controllers\Merchant\TrucksSettingController;
 use App\Http\Controllers\ReportController;
 
-# 1. Authentications & Login
+# 1. Registraion & Login
+Route::get('register', [AuthController::class, 'register'])->name('register');
+Route::post('register-merchant', [AuthController::class, 'registerMerchant'])->name('register_merchant');
+
 Route::get('login', [AuthController::class, 'viewLogin'])->name('login');
 Route::post('user-login', [AuthController::class, 'getLogin'])->name('get_login');
+
+
+# 1. Authentications & Login
 Route::get('logout', [AuthController::class, 'logout'])->name('logout');
 
 # 2. Dashboard
