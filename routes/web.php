@@ -12,7 +12,9 @@ Route::get('register', [AuthController::class, 'register'])->name('register');
 Route::post('register-merchant', [AuthController::class, 'registerMerchant'])->name('register_merchant');
 
 Route::get('login', [AuthController::class, 'viewLogin'])->name('login');
-Route::post('user-login', [AuthController::class, 'getLogin'])->name('get_login');
+Route::get('merchant-login', [AuthController::class, 'merchantLogin'])->name('merchant_login');
+Route::get('merchant-otp', [AuthController::class, 'OtpVerificationPage'])->name('merchant_otp');
+Route::post('merchant-auth', [AuthController::class, 'authMerchant'])->name('auth_merchant');
 
 
 # 1. Authentications & Login

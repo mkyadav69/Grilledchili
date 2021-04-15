@@ -4,7 +4,9 @@ namespace App\Http\Controllers\Authentication;
 
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Models\User;
 use Carbon\Carbon;
@@ -43,19 +45,23 @@ class AuthController extends Controller
     public function viewLogin(){
         return view('auth.users.login');
     }
-
-    public function getLogin(Request $request){
+    
+    public function merchantLogin(Request $request){
+        $this->validate($request,[
+            "mobile" => 'required|digits:10',
+        ]);
         if(!empty($request->mobile)){
             $check_merchant = User::where('mobile', $request->mobile)->first();
             if(!empty($check_merchant)){ 
                     $min = pow(10, 4);
                     $max = $min * 10 - 1;
                     $gen_otp = mt_rand($min, $max);
+                    $ref_number = Str::random(6);
                     $message = "Your One-Time Password (OTP) is ".$gen_otp.". Please do not share this password with anyone - GrilledChili";
                     $sms = AWS::createClient('sns');
                     $sms->publish([
                             'Message' => $message,
-                            'PhoneNumber' => '91'.$request->mobile, 
+                            'PhoneNumber' => '+91'.$request->mobile, 
                             'MessageAttributes' => [
                                 'AWS.SNS.SMS.SMSType'  => [
                                     'DataType'    => 'String',
@@ -63,29 +69,54 @@ class AuthController extends Controller
                                 ]
                             ],
                         ]);
-                // $credentials = $request->only('email', 'password');
-                // if (Auth::attempt($credentials)) {
-                //     $request->session()->regenerate();
-                //     return redirect()->route('dashboard')->with('message', 'Login done successfully.');
-                // }
+                    if(!empty($sms)){
+                        $check_merchant->otp = $gen_otp;
+                        $check_merchant->otp_status = 1;
+                        $check_merchant->save();
+                        $mobile = $request->mobile;
+                        Session::put('mobile', $mobile);
+                        return redirect()->route('merchant_otp')->with(['success'=>'OTP has been send on your register mobile number','mobile_number'=>$request->mobile]);
+                    }else{
+                        return back()->withErrors([
+                            'error' => "Somthing went wrong, please try after sometime",
+                        ]);
+                    }
             }else{
                 return back()->withErrors([
                     'error' => "You don't have any account, Please register first",
                 ]);
             }
-
         }
-        $this->validate($request,[
-            'email' => 'required',
-            "password"    => 'required',
-        ]);
     }
 
+    public function authMerchant(Request $request){
+        $this->validate($request,[
+            "otp" => 'required',
+        ]);
+        if(!empty($request->otp)){
+            $check_otp = User::where(['otp'=>$request->otp, 'otp_status'=>1])->first();
+            if(!empty($check_otp)){
+                if (Auth::loginUsingId($check_otp->id)) {
+                    $request->session()->regenerate();
+                    Session::forget('mobile');
+                    return redirect()->route('dashboard')->with('success', 'Login successfully');
+                }
+            }
+            return redirect()->route('merchant_otp')->with('error', 'Please enter the valid SMS OTP');
+        }
+    }
+
+    public function OtpVerificationPage(Request $request){
+        if(!Session::has('mobile')){
+            return redirect()->route('login')->with('error', 'Please login');
+        }
+        return view('auth.users.otp_page');
+    }
     public function logout(Request $request){
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
-        return redirect()->route('login')->with('message', 'Logout successfully !');
+        return redirect()->route('login')->with('success', 'Logout successfully !');
     }
     
     public function deleteUser(Request $request, $id){

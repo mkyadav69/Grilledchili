@@ -21,12 +21,15 @@
     .login-content {
         border-radius: 20px;
     }
+    #phone {
+        width: 145%;
+    }
 </style>
 <div class="login-form">
     <form action="{{route('register_merchant')}}" method="post">
         @csrf
         <div class="form-group">
-            <input class="au-input au-input--full form-control" type="text" name="first_name" value="{{old('first_name')}}" placeholder="First Name">
+            <input class="au-input au-input--full form-control" type="text" required name="first_name" value="{{old('first_name')}}" placeholder="First Name">
         </div>
         @if ($errors->has('first_name'))
             <div class="sufee-alert alert with-close alert-danger alert-dismissible fade show">
@@ -38,7 +41,7 @@
             </div>
         @endif
         <div class="form-group">
-            <input class="au-input au-input--full form-control" type="text" name="last_name" value="{{old('last_name')}}" placeholder="Last Name">
+            <input class="au-input au-input--full form-control" type="text" required name="last_name" value="{{old('last_name')}}" placeholder="Last Name">
         </div>
         @if ($errors->has('last_name'))
             <div class="sufee-alert alert with-close alert-danger alert-dismissible fade show">
@@ -50,7 +53,7 @@
             </div>
         @endif
         <div class="form-group">
-            <input class="au-input au-input--full form-control" type="text" name="email" value="{{old('email')}}" placeholder="Email">
+            <input class="au-input au-input--full form-control" type="text" required name="email" value="{{old('email')}}" placeholder="Email">
         </div>
         @if ($errors->has('email'))
             <div class="sufee-alert alert with-close alert-danger alert-dismissible fade show">
@@ -62,7 +65,7 @@
             </div>
         @endif
         <div class="form-group">
-            <input class="au-input au-input--full form-control" type="password" name="password" value="{{old('password')}}" placeholder="Password">
+            <input class="au-input au-input--full form-control" type="password" required name="password" value="{{old('password')}}" placeholder="Password">
         </div>
         @if ($errors->has('password'))
             <div class="sufee-alert alert with-close alert-danger alert-dismissible fade show">
@@ -74,7 +77,7 @@
             </div>
         @endif
         <div class="form-group">
-            <input class="au-input au-input--full form-control" type="text" name="mobile" value="{{old('mobile')}}" placeholder="Mobile Number">
+            <input class="au-input au-input--full form-control" type="text" required name="mobile" value="{{old('mobile')}}" placeholder="Mobile Number" id="phone" maxlength="10" pattern="\d{10}" title="Please enter exactly 10 digits" value="{{!empty(\Session::get('mobile')) ? \Session::get('mobile') : ''}}" placeholder="Account Mobile No" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');">
         </div>
         @if ($errors->has('mobile'))
             <div class="sufee-alert alert with-close alert-danger alert-dismissible fade show">
@@ -94,4 +97,16 @@
         </a>
     </div>
 </div>
+
+<script>
+   $(document).ready(function(){
+        const input = document.querySelector("#phone");
+        intlTelInput(input, {
+            onlyCountries:[
+                'us'
+            ],
+            utilsScript: "{{asset('js/utils.js')}}",
+        });
+   });
+</script>
 @endsection

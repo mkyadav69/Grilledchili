@@ -14,6 +14,7 @@
     <title>@yield('title')</title>
 
     <!-- Fontfaces CSS-->
+
     <link href="{{asset('css/font-face.css')}}" rel="stylesheet" media="all">
     <link href="{{asset('vendor/font-awesome-4.7/css/font-awesome.min.css')}}" rel="stylesheet" media="all">
     <link href="{{asset('vendor/font-awesome-5/css/fontawesome-all.min.css')}}" rel="stylesheet" media="all">
@@ -31,9 +32,26 @@
     <link href="{{asset('vendor/select2/select2.min.css')}}" rel="stylesheet" media="all">
     <link href="{{asset('vendor/perfect-scrollbar/perfect-scrollbar.css')}}" rel="stylesheet" media="all">
 
+
+
     <!-- Main CSS-->
     <link href="{{asset('css/theme.css')}}" rel="stylesheet" media="all">
+    <link href="{{asset('css/intlTelInput.css')}}" rel="stylesheet" media="all">
 
+    <script src="{{asset('vendor/jquery-3.2.1.min.js')}}"></script>
+    <script src="{{asset('js/utils.js')}}"></script>
+    <script src="{{asset('js/intlTelInput.js')}}"></script>
+    <!-- Bootstrap JS-->
+    
+    <script src="{{asset('js/jquery-ui.min.js')}}"></script>
+    <script src="{{asset('js/moment.min.js')}}"></script>
+    <script src="{{asset('js/daterangepicker.min.js')}}"></script>
+    <script src="{{asset('vendor/bootstrap-4.1/popper.min.js')}}"></script>
+    <script src="{{asset('vendor/bootstrap-4.1/bootstrap.min.js')}}"></script>
+   
+
+
+    
 </head>
 
 <body class="animsition">
@@ -55,7 +73,6 @@
     </div>
 
     <!-- Jquery JS-->
-    <script src="{{asset('vendor/jquery-3.2.1.min.js')}}"></script>
     <!-- Bootstrap JS-->
     <script src="{{asset('vendor/bootstrap-4.1/popper.min.js')}}"></script>
     <script src="{{asset('vendor/bootstrap-4.1/bootstrap.min.js')}}"></script>
@@ -73,6 +90,8 @@
     <script src="{{asset('vendor/perfect-scrollbar/perfect-scrollbar.js')}}"></script>
     <script src="{{asset('vendor/chartjs/Chart.bundle.min.js')}}"></script>
     <script src="{{asset('vendor/select2/select2.min.js')}}">
+    
+
     </script>
 
     <!-- Main JS-->
