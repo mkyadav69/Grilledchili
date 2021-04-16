@@ -18,8 +18,11 @@
     .login-content {
         border-radius: 20px;
     }
+    .au-input {
+        margin-left: 25px;
+    }
     .au-input--full {
-        width: 135%;
+        width: 105%;
     }
 </style>
 @if ($message = Session::get('success'))
@@ -50,8 +53,13 @@
 <div class="login-form">
     <form action="{{route('merchant_login')}}" method="get">
         @csrf
-        <div class="form-group">
-            <input class="au-input au-input--full form-control" required type="tel" name="mobile" id="phone" maxlength="10" pattern="\d{10}" title="Please enter exactly 10 digits" value="{{!empty(\Session::get('mobile')) ? \Session::get('mobile') : ''}}" placeholder="Account Mobile No" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');">
+        <div class="row  form-group">
+            <div class="col-1">
+                <input class="au-input au-input--full" type="tel" id="phone">
+            </div>
+            <div class="col-10">
+                <input class="au-input au-input--full" required type="tel" name="mobile" id="phone" maxlength="10" pattern="\d{10}" title="Please enter exactly 10 digits" value="{{!empty(\Session::get('change')) ? \Session::get('change') : ''}}" placeholder="Account Mobile No" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');">
+            </div>
         </div>
         @if ($errors->has('mobile'))
             <div class="sufee-alert alert with-close alert-danger alert-dismissible fade show">
@@ -81,8 +89,9 @@ $(document).ready(function(){
     
     const input = document.querySelector("#phone");
     intlTelInput(input, {
+        autoHideDialCode: false,
+        autoPlaceholder: "off",
         initialCountry: "us",
-        
         onlyCountries:[
             'us'
         ],

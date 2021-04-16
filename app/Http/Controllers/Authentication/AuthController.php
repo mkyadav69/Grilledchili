@@ -27,7 +27,6 @@ class AuthController extends Controller
             'password' => 'required|min:8',
             'mobile' => 'required|digits:10',
         ]);
-
         $merchant = User::create([
             'first_name'=> $request->first_name,
             'last_name'=> $request->first_name,
@@ -42,7 +41,10 @@ class AuthController extends Controller
         }
     }
 
-    public function viewLogin(){
+    public function viewLogin(){ 
+        if(Session::has('mobile')){
+            Session::forget('mobile');        
+        }
         return view('auth.users.login');
     }
     
@@ -61,7 +63,7 @@ class AuthController extends Controller
                     $sms = AWS::createClient('sns');
                     $sms->publish([
                             'Message' => $message,
-                            'PhoneNumber' => '+91'.$request->mobile, 
+                            'PhoneNumber' => '+1'.$request->mobile, 
                             'MessageAttributes' => [
                                 'AWS.SNS.SMS.SMSType'  => [
                                     'DataType'    => 'String',
@@ -75,6 +77,7 @@ class AuthController extends Controller
                         $check_merchant->save();
                         $mobile = $request->mobile;
                         Session::put('mobile', $mobile);
+                        Session::put('change', $mobile);
                         return redirect()->route('merchant_otp')->with(['success'=>'OTP has been send on your register mobile number','mobile_number'=>$request->mobile]);
                     }else{
                         return back()->withErrors([
@@ -108,6 +111,7 @@ class AuthController extends Controller
 
     public function OtpVerificationPage(Request $request){
         if(!Session::has('mobile')){
+            Session::forget('change');
             return redirect()->route('login')->with('error', 'Please login');
         }
         return view('auth.users.otp_page');

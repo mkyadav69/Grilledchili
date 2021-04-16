@@ -24,6 +24,10 @@
     #phone {
         width: 145%;
     }
+    .flag{
+        margin-left:50px;
+    }
+    
 </style>
 <div class="login-form">
     <form action="{{route('register_merchant')}}" method="post">
@@ -76,8 +80,13 @@
                 </button>
             </div>
         @endif
-        <div class="form-group">
-            <input class="au-input au-input--full form-control" type="text" required name="mobile" value="{{old('mobile')}}" placeholder="Mobile Number" id="phone" maxlength="10" pattern="\d{10}" title="Please enter exactly 10 digits" value="{{!empty(\Session::get('mobile')) ? \Session::get('mobile') : ''}}" placeholder="Account Mobile No" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');">
+        <div class="row  form-group">
+            <div class="col-1">
+                <input class="au-input au-input--full" type="tel" id="phone">
+            </div>
+            <div class="col-7">
+                <input class="au-input au-input--full flag" required type="tel" name="mobile" id="phone" maxlength="10" pattern="\d{10}" title="Please enter exactly 10 digits" value="{{!empty($mobile) ? $mobile : ''}}" placeholder="Account Mobile No" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');">
+            </div>
         </div>
         @if ($errors->has('mobile'))
             <div class="sufee-alert alert with-close alert-danger alert-dismissible fade show">
@@ -102,6 +111,9 @@
    $(document).ready(function(){
         const input = document.querySelector("#phone");
         intlTelInput(input, {
+            autoHideDialCode: false,
+            autoPlaceholder: "off",
+            initialCountry: "us",
             onlyCountries:[
                 'us'
             ],

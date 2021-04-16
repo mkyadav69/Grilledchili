@@ -32,7 +32,7 @@
         @csrf
         @if (\Session::get('mobile'))
             <div class="form-group">
-                <center><p style="font:bold"><b>An OTP has been sent to {{ \Session::get('mobile')}}<a href="{{route('login')}}">&nbsp Change</a></p></b></center>
+                <center><p style="font:bold"><b>An OTP has been sent to {{ \Session::get('mobile')}}<a href="{{route('login')}}" class="change">&nbsp Change</a></p></b></center>
             </div>
         @endif
         <input type="hidden" class="form-control" id="mobile_no" name="mobile_no" value="{{!empty($mobile_number) ? $mobile_number : ''}}"> 
@@ -86,8 +86,8 @@
 
 <script>
     $(document).ready(function(){
+        var mobile = "{{ \Session::get('mobile')}}";
         $('.resend').on('click', function() {                    
-            var mobile = "{{ \Session::get('mobile')}}";
             var path = "{{route('merchant_login')}}";
             if(mobile !='' && mobile != null){
                  $.ajax({
@@ -103,7 +103,7 @@
                 });
             }
         }); 
-    });
+    });   
 </script>
 
 @endsection
